@@ -8,9 +8,7 @@ import android.util.Log;
 import com.appsonair.AppsOnAirServices;
 import com.appsonair.UpdateCallBack;
 
-
 public class MainActivity extends Activity {
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,13 +20,12 @@ public class MainActivity extends Activity {
         AppsOnAirServices.checkForAppUpdate(this, new UpdateCallBack() {
             @Override
             public void onSuccess(String response) {
-                Log.e("mye", ""+response);
+                Log.e("mye", "" + response);
             }
 
             @Override
             public void onFailure(String message) {
-                Log.e("mye", "onFailure"+message);
-
+                Log.e("mye", "onFailure" + message);
             }
         });
     }

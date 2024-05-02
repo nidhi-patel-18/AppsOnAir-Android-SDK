@@ -9,9 +9,9 @@ import android.net.NetworkCapabilities;
 import android.net.NetworkRequest;
 import android.os.Build;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-
 
 import org.json.JSONObject;
 
@@ -21,7 +21,6 @@ import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-
 
 public class AppsOnAirServices {
 
@@ -33,12 +32,11 @@ public class AppsOnAirServices {
         AppsOnAirServices.showNativeUI = showNativeUI;
     }
 
-
     public static void checkForAppUpdate(Context context, UpdateCallBack callback) {
         ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback() {
             @Override
-            public void onAvailable(Network network) {
-                String url =  BuildConfig.Base_URL + AppsOnAirServices.appId;
+            public void onAvailable(@NonNull Network network) {
+                String url = BuildConfig.Base_URL + AppsOnAirServices.appId;
                 OkHttpClient client = new OkHttpClient().newBuilder()
                         .build();
                 Request request = new Request.Builder()
@@ -87,20 +85,18 @@ public class AppsOnAirServices {
                                 }
                                 callback.onSuccess(myResponse);
                             }
-
                         } catch (Exception e) {
                             e.printStackTrace();
                             callback.onFailure(e.getMessage());
                             Log.d("AAAA", String.valueOf(e.getMessage()));
-
                         }
                     }
                 });
             }
 
             @Override
-            public void onLost(Network network) {
-                //Lost connection
+            public void onLost(@NonNull Network network) {
+                super.onLost(network);
             }
         };
 
