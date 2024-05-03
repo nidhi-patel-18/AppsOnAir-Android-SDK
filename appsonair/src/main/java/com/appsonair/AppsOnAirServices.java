@@ -9,7 +9,6 @@ import android.net.NetworkCapabilities;
 import android.net.NetworkRequest;
 import android.os.Build;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -26,72 +25,93 @@ public class AppsOnAirServices {
 
     static String appId;
     static Boolean showNativeUI;
+    private static final String TAG = "AppsOnAirServices";
 
     public static void setAppId(String appId, boolean showNativeUI) {
         AppsOnAirServices.appId = appId;
         AppsOnAirServices.showNativeUI = showNativeUI;
     }
 
-    public static void checkForAppUpdate(Context context, UpdateCallBack callback) {
+    public static void getResponse(@NonNull Response response, Context context, UpdateCallBack callBack, boolean isFromCDN) {
+        try {
+            if (response.code() == 200) {
+                String myResponse = response.body().string();
+                JSONObject jsonObject = new JSONObject(myResponse);
+                JSONObject updateData = jsonObject.getJSONObject("updateData");
+                boolean isAndroidUpdate = updateData.getBoolean("isAndroidUpdate");
+                boolean isMaintenance = jsonObject.getBoolean("isMaintenance");
+                if (isAndroidUpdate) {
+                    boolean isAndroidForcedUpdate = updateData.getBoolean("isAndroidForcedUpdate");
+                    String androidBuildNumber = updateData.getString("androidBuildNumber");
+                    PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+                    int versionCode = info.versionCode;
+                    int buildNum = 0;
+
+                    if (!(androidBuildNumber.equals(null))) {
+                        buildNum = Integer.parseInt(androidBuildNumber);
+                    }
+                    boolean isUpdate = versionCode < buildNum;
+                    if (showNativeUI && isUpdate && (isAndroidForcedUpdate || isAndroidUpdate)) {
+                        Intent intent = new Intent(context, AppUpdateActivity.class);
+                        intent.putExtra("res", myResponse);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(intent);
+                    }
+                } else if (isMaintenance && showNativeUI) {
+                    Intent intent = new Intent(context, MaintenanceActivity.class);
+                    intent.putExtra("res", myResponse);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
+                }
+                callBack.onSuccess(myResponse);
+            } else if (isFromCDN) {
+                callServiceApi(context, callBack);
+            }
+        } catch (Exception e) {
+            callBack.onFailure(e.getMessage());
+            Log.d(TAG, "getResponse: " + e.getMessage());
+        }
+    }
+
+    public static void callCDNServiceApi(Context context, UpdateCallBack callBack) {
+        String url = BuildConfig.CDN_BASE_URL + AppsOnAirServices.appId + ".json";
+        OkHttpClient client = new OkHttpClient().newBuilder().build();
+        Request request = new Request.Builder().url(url).method("GET", null).build();
+        client.newCall(request).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.d(TAG, "onFailure: AppsOnAirCDNApi" + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) {
+                getResponse(response, context, callBack, true);
+            }
+        });
+    }
+
+    public static void callServiceApi(Context context, UpdateCallBack callBack) {
+        String url = BuildConfig.Base_URL + AppsOnAirServices.appId;
+        OkHttpClient client = new OkHttpClient().newBuilder().build();
+        Request request = new Request.Builder().url(url).method("GET", null).build();
+        client.newCall(request).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.d(TAG, "onFailure: AppsOnAirServiceApi" + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) {
+                getResponse(response, context, callBack, false);
+            }
+        });
+    }
+
+    public static void checkForAppUpdate(Context context, UpdateCallBack callBack) {
         ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback() {
             @Override
             public void onAvailable(@NonNull Network network) {
-                String url = BuildConfig.Base_URL + AppsOnAirServices.appId;
-                OkHttpClient client = new OkHttpClient().newBuilder()
-                        .build();
-                Request request = new Request.Builder()
-                        .url(url)
-                        .method("GET", null)
-                        .build();
-                client.newCall(request).enqueue(new okhttp3.Callback() {
-                    @Override
-                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                        Log.d("EX:", String.valueOf(e));
-                    }
-
-                    @Override
-                    public void onResponse(@NonNull Call call, @NonNull Response response) {
-                        try {
-                            if (response.code() == 200) {
-                                String myResponse = response.body().string();
-                                JSONObject jsonObject = new JSONObject(myResponse);
-                                JSONObject updateData = jsonObject.getJSONObject("updateData");
-                                boolean isAndroidUpdate = updateData.getBoolean("isAndroidUpdate");
-                                boolean isMaintenance = jsonObject.getBoolean("isMaintenance");
-                                if (isAndroidUpdate) {
-                                    boolean isAndroidForcedUpdate = updateData.getBoolean("isAndroidForcedUpdate");
-                                    String androidBuildNumber = updateData.getString("androidBuildNumber");
-                                    PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-                                    int versionCode = info.versionCode;
-                                    int buildNum = 0;
-
-                                    if (!(androidBuildNumber.equals(null))) {
-                                        buildNum = Integer.parseInt(androidBuildNumber);
-                                    }
-                                    boolean isUpdate = versionCode < buildNum;
-                                    if (showNativeUI && isUpdate && (isAndroidForcedUpdate || isAndroidUpdate)) {
-                                        Intent intent = new Intent(context, AppUpdateActivity.class);
-                                        intent.putExtra("res", myResponse);
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                        context.startActivity(intent);
-                                    }
-                                } else if (isMaintenance && showNativeUI) {
-                                    Intent intent = new Intent(context, MaintenanceActivity.class);
-                                    intent.putExtra("res", myResponse);
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                    context.startActivity(intent);
-                                } else {
-                                    //TODO : There is No Update and No Maintenance.
-                                }
-                                callback.onSuccess(myResponse);
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            callback.onFailure(e.getMessage());
-                            Log.d("AAAA", String.valueOf(e.getMessage()));
-                        }
-                    }
-                });
+                callCDNServiceApi(context, callBack);
             }
 
             @Override
@@ -100,14 +120,12 @@ public class AppsOnAirServices {
             }
         };
 
-        ConnectivityManager connectivityManager =
-                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             connectivityManager.registerDefaultNetworkCallback(networkCallback);
         } else {
-            NetworkRequest request = new NetworkRequest.Builder()
-                    .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET).build();
+            NetworkRequest request = new NetworkRequest.Builder().addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET).build();
             connectivityManager.registerNetworkCallback(request, networkCallback);
         }
     }
