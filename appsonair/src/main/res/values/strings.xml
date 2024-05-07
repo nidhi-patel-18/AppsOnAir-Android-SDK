@@ -6,6 +6,17 @@
     <string name="btn_no_thanks">No, thanks</string>
     <string name="maintenance">app is under maintenance</string>
 
+    <string name="new_ticket">New Ticket</string>
+    <string name="description">Description</string>
+    <string name="add_description_here">Add description here…</string>
+    <string name="email">Email</string>
+    <string name="add_email_here">Add email here…</string>
+    <string name="ticket_type">Ticket Type</string>
+    <string name="improvement_suggestion">Improvement suggestion</string>
+    <string name="bug_report">Bug report</string>
+    <string name="run_on_apps_on_air">We run on AppsOnAir</string>
+    <string name="submit">Submit</string>
+
     <string name="label_brush">Brush</string>
     <string name="label_shape">Shape</string>
     <string name="label_oval">Oval</string>

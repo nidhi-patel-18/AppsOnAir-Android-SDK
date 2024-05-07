@@ -38,7 +38,7 @@ public class AppsOnAirServices {
         ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback() {
             @Override
             public void onAvailable(Network network) {
-                String url =  BuildConfig.Base_URL + AppsOnAirServices.appId;
+                String url = BuildConfig.Base_URL + AppsOnAirServices.appId;
                 OkHttpClient client = new OkHttpClient().newBuilder()
                         .build();
                 Request request = new Request.Builder()
@@ -99,8 +99,8 @@ public class AppsOnAirServices {
             }
 
             @Override
-            public void onLost(Network network) {
-                //Lost connection
+            public void onLost(@NonNull Network network) {
+                super.onLost(network);
             }
         };
 

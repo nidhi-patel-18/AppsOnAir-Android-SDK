@@ -19,8 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:gravity="center"
-            >
+            android:gravity="center">
 
             <ImageView
                 android:id="@+id/img_icon"
@@ -35,11 +34,11 @@
                 android:layout_marginLeft="12dp"
                 android:fontFamily="@font/inter_regular"
                 android:lines="1"
-                android:visibility="gone"
                 android:text="App Name"
                 android:textColor="#1A1D40"
                 android:textSize="20dp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone" />
 
         </LinearLayout>
 
@@ -47,11 +46,11 @@
             android:id="@+id/txt_title_maintain"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginTop="20dp"
             android:fontFamily="@font/inter_regular"
             android:text="The app"
             android:textColor="#1A1D40"
-            android:layout_gravity="center"
             android:textSize="18dp"
             android:textStyle="bold" />
 
@@ -59,45 +58,43 @@
             android:id="@+id/txt_des_maintain"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginTop="10dp"
             android:fontFamily="@font/inter_regular"
             android:lineSpacingExtra="5dp"
-            android:layout_gravity="center"
             android:text="Amet minim mollit "
             android:textColor="#585E75"
-            android:textSize="14dp"
-            />
+            android:textSize="14dp" />
     </LinearLayout>
 
 
     <LinearLayout
-        android:layout_width="match_parent"
         android:id="@+id/lls_root"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:gravity="center_vertical"
+        android:orientation="vertical"
         android:padding="36dp"
         android:visibility="gone">
 
         <ImageView
-            android:src="@drawable/maintenance_icon"
             android:id="@+id/img2_icon"
-            android:layout_gravity="center_horizontal"
             android:layout_width="65dp"
-            android:layout_height="65dp" />
+            android:layout_height="65dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/maintenance_icon" />
 
         <TextView
             android:id="@+id/txt_title2_maintain"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/inter_regular"
-            android:textSize="20dp"
-            android:gravity="center"
-            android:textStyle="bold"
-            android:textColor="#1A1D40"
             android:layout_marginTop="20dp"
+            android:fontFamily="@font/inter_regular"
+            android:gravity="center"
             android:text="@string/maintenance"
-            />
+            android:textColor="#1A1D40"
+            android:textSize="20dp"
+            android:textStyle="bold" />
 
     </LinearLayout>
 

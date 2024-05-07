@@ -30,7 +30,6 @@ public class MainActivity extends Activity {
 
     private ScreenshotDetectionDelegate screenshotDetectionDelegate;
     private ShakeDetector shakeDetector;
-    private static final int REQUEST_EXTERNAL_STORAGe = 1;
     private static final String TAG = "MainActivity";
 
     @Override
