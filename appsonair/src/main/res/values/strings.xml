@@ -17,6 +17,10 @@
     <string name="run_on_apps_on_air">We run on AppsOnAir</string>
     <string name="submit">Submit</string>
 
+    <string name="description_required">Description required!</string>
+    <string name="email_required">Email required!</string>
+    <string name="invalid_email">Invalid email address!</string>
+
     <string name="label_brush">Brush</string>
     <string name="label_shape">Shape</string>
     <string name="label_oval">Oval</string>
