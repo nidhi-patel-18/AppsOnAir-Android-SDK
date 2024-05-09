@@ -2,11 +2,7 @@ package com.appsonair;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.text.InputFilter;
-import android.text.TextUtils;
-import android.util.Log;
 import android.util.Patterns;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -15,9 +11,10 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.textfield.TextInputEditText;
 
 
 public class FeedbackActivity extends AppCompatActivity {
@@ -37,21 +34,11 @@ public class FeedbackActivity extends AppCompatActivity {
         ImageView icClose = findViewById(R.id.ic_close);
         Button btnSubmit = findViewById(R.id.btn_submit);
         EditText etEmail = findViewById(R.id.et_email);
-        EditText etDescription = findViewById(R.id.et_description);
+        TextInputEditText etDescription = findViewById(R.id.et_description);
 
-        icClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onBackPressed();
-            }
-        });
+        icClose.setOnClickListener(view -> onBackPressed());
 
-        icRemove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                flBugView.setVisibility(View.GONE);
-            }
-        });
+        icRemove.setOnClickListener(view -> flBugView.setVisibility(View.GONE));
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
@@ -64,25 +51,22 @@ public class FeedbackActivity extends AppCompatActivity {
             }
         });
 
-        btnSubmit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String email = etEmail.getText().toString().trim();
-                String description = etDescription.getText().toString().trim();
-                if (description.isEmpty() && email.isEmpty()) {
-                    etDescription.setError(getResources().getString(R.string.description_required));
-                    etEmail.setError(getResources().getString(R.string.email_required));
-                } else if (description.isEmpty()) {
-                    etDescription.setError(getResources().getString(R.string.description_required));
-                } else if (email.isEmpty()) {
-                    etEmail.setError(getResources().getString(R.string.email_required));
-                } else if (!isValidEmail(email)) {
-                    etEmail.setError(getResources().getString(R.string.invalid_email));
-                } else {
-                    hideKeyboard();
-                    etEmail.setError(null);
-                    etDescription.setError(null);
-                }
+        btnSubmit.setOnClickListener(view -> {
+            String email = etEmail.getText().toString().trim();
+            String description = etDescription.getText().toString().trim();
+            if (description.isEmpty() && email.isEmpty()) {
+                etDescription.setError(getResources().getString(R.string.description_required));
+                etEmail.setError(getResources().getString(R.string.email_required));
+            } else if (description.isEmpty()) {
+                etDescription.setError(getResources().getString(R.string.description_required));
+            } else if (email.isEmpty()) {
+                etEmail.setError(getResources().getString(R.string.email_required));
+            } else if (!isValidEmail(email)) {
+                etEmail.setError(getResources().getString(R.string.invalid_email));
+            } else {
+                hideKeyboard();
+                etEmail.setError(null);
+                etDescription.setError(null);
             }
         });
     }

@@ -1,101 +1,246 @@
 package com.appsonair;
 
+import static android.content.Context.SENSOR_SERVICE;
+
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
+import android.graphics.Bitmap;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkRequest;
+import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.util.Log;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 
-
-import org.json.JSONObject;
-
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-
-import okhttp3.Call;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.Objects;
 
 
 public class AppsOnAirServices {
 
     static String appId;
     static Boolean showNativeUI;
+    private static final String TAG = "AppsOnAirServices";
+
+    static SensorManager mSensorManager;
+    static float mAccel;
+    static float mAccelCurrent;
+    static float mAccelLast;
+    static Context mContext;
 
     public static void setAppId(String appId, boolean showNativeUI) {
         AppsOnAirServices.appId = appId;
         AppsOnAirServices.showNativeUI = showNativeUI;
     }
 
+    public static void shakeBug(Context context) {
+        AppsOnAirServices.mContext = context;
+        mSensorManager = (SensorManager) context.getSystemService(SENSOR_SERVICE);
+        Objects.requireNonNull(mSensorManager).registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+                SensorManager.SENSOR_DELAY_NORMAL);
+        mAccel = 10f;
+        mAccelCurrent = SensorManager.GRAVITY_EARTH;
+        mAccelLast = SensorManager.GRAVITY_EARTH;
+    }
+
+    public static SensorEventListener mSensorListener = new SensorEventListener() {
+        @Override
+        public void onSensorChanged(SensorEvent event) {
+            float x = event.values[0];
+            float y = event.values[1];
+            float z = event.values[2];
+            mAccelLast = mAccelCurrent;
+            mAccelCurrent = (float) Math.sqrt((double) (x * x + y * y + z * z));
+            float delta = mAccelCurrent - mAccelLast;
+            mAccel = mAccel * 0.9f + delta;
+            if (mAccel > 12) {
+                Log.d(TAG, "onSensorChanged: ");
+                captureScreen();
+            }
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        }
+    };
+
+    public static void captureScreen() {
+        View rootView = ((Activity) mContext).getWindow().getDecorView().getRootView();
+        rootView.setDrawingCacheEnabled(true);
+        Bitmap screenshotBitmap = Bitmap.createBitmap(rootView.getDrawingCache());
+        rootView.setDrawingCacheEnabled(false);
+        String screenshotPath = saveBitmapToFile(screenshotBitmap);
+
+        File originalImageFile = new File(screenshotPath);
+        if (!originalImageFile.exists()) {
+            return;
+        }
+        // Create a new File object in the cache directory
+        File cacheDir = mContext.getCacheDir();
+        String newFileName = "AppsOnAir_Services_Screenshot" + getCurrentDateTimeString() + ".jpg";
+        File newImageFile = new File(cacheDir, newFileName);
+        // Copy the original image to the cache directory
+        try {
+            copyFile(originalImageFile, newImageFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        // Convert the File to a content URI
+        Uri imageUri = Uri.fromFile(newImageFile);
+
+        Intent intent = new Intent(mContext, FullscreenActivity.class);
+        intent.putExtra("IMAGE_PATH", imageUri);
+        mContext.startActivity(intent);
+//        View view = ((Activity) mContext).getWindow().getDecorView();
+//        view.measure(View.MeasureSpec.makeMeasureSpec(view.getWidth(), View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(view.getHeight(), View.MeasureSpec.EXACTLY));
+//        view.layout((int) view.getX(), (int) view.getY(), (int) view.getX() + view.getMeasuredWidth(), (int) view.getY() + view.getMeasuredHeight());
+//        view.setDrawingCacheEnabled(true);
+//        view.buildDrawingCache(true);
+//        Bitmap bitmap = Bitmap.createBitmap(view.getDrawingCache());
+//        view.setDrawingCacheEnabled(false);
+//
+//        String path = Environment.getExternalStorageDirectory().toString() + "/test.png";
+//        File imageFile = new File(path);
+//        if (!imageFile.getParentFile().exists()) {
+//            imageFile.getParentFile().mkdirs();
+//        }
+//        Log.d(TAG, "captureScreen: " + imageFile.getPath());
+//        try {
+//            OutputStream outputStream = new FileOutputStream(imageFile);
+//            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+//            outputStream.flush();
+//            outputStream.close();
+//
+//            Intent intent = new Intent(mContext, FeedbackActivity.class);
+//            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            mContext.startActivity(intent);
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+    }
+
+    public static void copyFile(File source, File destination) throws IOException {
+        try (InputStream in = new FileInputStream(source);
+             OutputStream out = new FileOutputStream(destination)) {
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = in.read(buffer)) > 0) {
+                out.write(buffer, 0, length);
+            }
+        }
+    }
+
+    public static String getCurrentDateTimeString() {
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
+        return dateFormat.format(calendar.getTime());
+    }
+
+    public static String saveBitmapToFile(Bitmap bitmap) {
+        try {
+            File cacheDir = mContext.getCacheDir();
+            String fileName = "NativeScreenshot_" + getCurrentDateTimeString() + ".jpg";
+            File screenshotFile = new File(cacheDir, fileName);
+
+            FileOutputStream outputStream = new FileOutputStream(screenshotFile);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+            outputStream.flush();
+            outputStream.close();
+
+            return screenshotFile.getAbsolutePath();
+        } catch (IOException e) {
+            Log.e(TAG, "Error saving native screenshot to file", e);
+            return null;
+        }
+    }
 
     public static void checkForAppUpdate(Context context, UpdateCallBack callback) {
         ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback() {
             @Override
-            public void onAvailable(Network network) {
-                String url = BuildConfig.Base_URL + AppsOnAirServices.appId;
-                OkHttpClient client = new OkHttpClient().newBuilder()
-                        .build();
-                Request request = new Request.Builder()
-                        .url(url)
-                        .method("GET", null)
-                        .build();
-                client.newCall(request).enqueue(new okhttp3.Callback() {
-                    @Override
-                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                        Log.d("EX:", String.valueOf(e));
-                    }
+            public void onAvailable(@NonNull Network network) {
+//                Intent intent = new Intent(context, FeedbackActivity.class);
+//                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                context.startActivity(intent);
 
-                    @Override
-                    public void onResponse(@NonNull Call call, @NonNull Response response) {
-                        try {
-                            if (response.code() == 200) {
-                                String myResponse = response.body().string();
-                                JSONObject jsonObject = new JSONObject(myResponse);
-                                JSONObject updateData = jsonObject.getJSONObject("updateData");
-                                boolean isAndroidUpdate = updateData.getBoolean("isAndroidUpdate");
-                                boolean isMaintenance = jsonObject.getBoolean("isMaintenance");
-                                if (isAndroidUpdate) {
-                                    boolean isAndroidForcedUpdate = updateData.getBoolean("isAndroidForcedUpdate");
-                                    String androidBuildNumber = updateData.getString("androidBuildNumber");
-                                    PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-                                    int versionCode = info.versionCode;
-                                    int buildNum = 0;
-
-                                    if (!(androidBuildNumber.equals(null))) {
-                                        buildNum = Integer.parseInt(androidBuildNumber);
-                                    }
-                                    boolean isUpdate = versionCode < buildNum;
-                                    if (showNativeUI && isUpdate && (isAndroidForcedUpdate || isAndroidUpdate)) {
-                                        Intent intent = new Intent(context, AppUpdateActivity.class);
-                                        intent.putExtra("res", myResponse);
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                        context.startActivity(intent);
-                                    }
-                                } else if (isMaintenance && showNativeUI) {
-                                    Intent intent = new Intent(context, MaintenanceActivity.class);
-                                    intent.putExtra("res", myResponse);
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                    context.startActivity(intent);
-                                } else {
-                                    //TODO : There is No Update and No Maintenance.
-                                }
-                                callback.onSuccess(myResponse);
-                            }
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            callback.onFailure(e.getMessage());
-                            Log.d("AAAA", String.valueOf(e.getMessage()));
-
-                        }
-                    }
-                });
+//                String url = BuildConfig.Base_URL + AppsOnAirServices.appId;
+//                OkHttpClient client = new OkHttpClient().newBuilder()
+//                        .build();
+//                Request request = new Request.Builder()
+//                        .url(url)
+//                        .method("GET", null)
+//                        .build();
+//                client.newCall(request).enqueue(new okhttp3.Callback() {
+//                    @Override
+//                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
+//                        Log.d("EX:", String.valueOf(e));
+//                    }
+//
+//                    @Override
+//                    public void onResponse(@NonNull Call call, @NonNull Response response) {
+//                        try {
+//                            if (response.code() == 200) {
+//                                String myResponse = response.body().string();
+//                                JSONObject jsonObject = new JSONObject(myResponse);
+//                                JSONObject updateData = jsonObject.getJSONObject("updateData");
+//                                boolean isAndroidUpdate = updateData.getBoolean("isAndroidUpdate");
+//                                boolean isMaintenance = jsonObject.getBoolean("isMaintenance");
+//                                if (isAndroidUpdate) {
+//                                    boolean isAndroidForcedUpdate = updateData.getBoolean("isAndroidForcedUpdate");
+//                                    String androidBuildNumber = updateData.getString("androidBuildNumber");
+//                                    PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+//                                    int versionCode = info.versionCode;
+//                                    int buildNum = 0;
+//
+//                                    if (!(androidBuildNumber.equals(null))) {
+//                                        buildNum = Integer.parseInt(androidBuildNumber);
+//                                    }
+//                                    boolean isUpdate = versionCode < buildNum;
+//                                    if (showNativeUI && isUpdate && (isAndroidForcedUpdate || isAndroidUpdate)) {
+//                                        Intent intent = new Intent(context, AppUpdateActivity.class);
+//                                        intent.putExtra("res", myResponse);
+//                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                                        context.startActivity(intent);
+//                                    }
+//                                } else if (isMaintenance && showNativeUI) {
+//                                    Intent intent = new Intent(context, MaintenanceActivity.class);
+//                                    intent.putExtra("res", myResponse);
+//                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                                    context.startActivity(intent);
+//                                } else {
+//                                    //TODO : There is No Update and No Maintenance.
+//                                }
+//                                callback.onSuccess(myResponse);
+//                            }
+//
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                            callback.onFailure(e.getMessage());
+//                            Log.d("AAAA", String.valueOf(e.getMessage()));
+//
+//                        }
+//                    }
+//                });
             }
 
             @Override
@@ -104,15 +249,14 @@ public class AppsOnAirServices {
             }
         };
 
-        ConnectivityManager connectivityManager =
-                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             connectivityManager.registerDefaultNetworkCallback(networkCallback);
         } else {
-            NetworkRequest request = new NetworkRequest.Builder()
-                    .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET).build();
+            NetworkRequest request = new NetworkRequest.Builder().addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET).build();
             connectivityManager.registerNetworkCallback(request, networkCallback);
         }
     }
+
 }
