@@ -12,15 +12,15 @@ import java.net.URL;
 public class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
     ImageView bmImage;
 
-    public DownloadImageTask(ImageView bmImage) {
-        this.bmImage = bmImage;
+    public DownloadImageTask(ImageView imageView) {
+        this.bmImage = imageView;
     }
 
     protected Bitmap doInBackground(String... urls) {
-        String urldisplay = urls[0];
+        String displayUrl = urls[0];
         Bitmap mIcon11 = null;
         try {
-            InputStream in = new URL(urldisplay).openStream();
+            InputStream in = new URL(displayUrl).openStream();
             mIcon11 = BitmapFactory.decodeStream(in);
         } catch (Exception e) {
             Log.e("Error", e.getMessage());

@@ -2,6 +2,7 @@ package com.appsonair;
 
 import static android.content.Context.SENSOR_SERVICE;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -16,7 +17,6 @@ import android.net.NetworkCapabilities;
 import android.net.NetworkRequest;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 
@@ -24,7 +24,6 @@ import androidx.annotation.NonNull;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,7 +44,6 @@ public class AppsOnAirServices {
     static float mAccel;
     static float mAccelCurrent;
     static float mAccelLast;
-    static Context mContext;
 
     public static void setAppId(String appId, boolean showNativeUI) {
         AppsOnAirServices.appId = appId;
@@ -53,49 +51,45 @@ public class AppsOnAirServices {
     }
 
     public static void shakeBug(Context context) {
-        AppsOnAirServices.mContext = context;
         mSensorManager = (SensorManager) context.getSystemService(SENSOR_SERVICE);
-        Objects.requireNonNull(mSensorManager).registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-                SensorManager.SENSOR_DELAY_NORMAL);
+        Objects.requireNonNull(mSensorManager).registerListener(new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent sensorEvent) {
+                float x = sensorEvent.values[0];
+                float y = sensorEvent.values[1];
+                float z = sensorEvent.values[2];
+                mAccelLast = mAccelCurrent;
+                mAccelCurrent = (float) Math.sqrt(x * x + y * y + z * z);
+                float delta = mAccelCurrent - mAccelLast;
+                mAccel = mAccel * 0.9f + delta;
+                if (mAccel > 12) {
+                    Log.d(TAG, "onSensorChanged: ");
+                    captureScreen(context);
+                }
+            }
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int i) {
+
+            }
+        }, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
         mAccel = 10f;
         mAccelCurrent = SensorManager.GRAVITY_EARTH;
         mAccelLast = SensorManager.GRAVITY_EARTH;
     }
 
-    public static SensorEventListener mSensorListener = new SensorEventListener() {
-        @Override
-        public void onSensorChanged(SensorEvent event) {
-            float x = event.values[0];
-            float y = event.values[1];
-            float z = event.values[2];
-            mAccelLast = mAccelCurrent;
-            mAccelCurrent = (float) Math.sqrt((double) (x * x + y * y + z * z));
-            float delta = mAccelCurrent - mAccelLast;
-            mAccel = mAccel * 0.9f + delta;
-            if (mAccel > 12) {
-                Log.d(TAG, "onSensorChanged: ");
-                captureScreen();
-            }
-        }
-
-        @Override
-        public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        }
-    };
-
-    public static void captureScreen() {
-        View rootView = ((Activity) mContext).getWindow().getDecorView().getRootView();
+    public static void captureScreen(Context context) {
+        View rootView = ((Activity) context).getWindow().getDecorView().getRootView();
         rootView.setDrawingCacheEnabled(true);
         Bitmap screenshotBitmap = Bitmap.createBitmap(rootView.getDrawingCache());
         rootView.setDrawingCacheEnabled(false);
-        String screenshotPath = saveBitmapToFile(screenshotBitmap);
+        String screenshotPath = saveBitmapToFile(screenshotBitmap,context);
 
         File originalImageFile = new File(screenshotPath);
         if (!originalImageFile.exists()) {
             return;
         }
         // Create a new File object in the cache directory
-        File cacheDir = mContext.getCacheDir();
+        File cacheDir = context.getCacheDir();
         String newFileName = "AppsOnAir_Services_Screenshot" + getCurrentDateTimeString() + ".jpg";
         File newImageFile = new File(cacheDir, newFileName);
         // Copy the original image to the cache directory
@@ -107,9 +101,10 @@ public class AppsOnAirServices {
         // Convert the File to a content URI
         Uri imageUri = Uri.fromFile(newImageFile);
 
-        Intent intent = new Intent(mContext, FullscreenActivity.class);
+        Intent intent = new Intent(context, FullscreenActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         intent.putExtra("IMAGE_PATH", imageUri);
-        mContext.startActivity(intent);
+        context.startActivity(intent);
 //        View view = ((Activity) mContext).getWindow().getDecorView();
 //        view.measure(View.MeasureSpec.makeMeasureSpec(view.getWidth(), View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(view.getHeight(), View.MeasureSpec.EXACTLY));
 //        view.layout((int) view.getX(), (int) view.getY(), (int) view.getX() + view.getMeasuredWidth(), (int) view.getY() + view.getMeasuredHeight());
@@ -141,8 +136,7 @@ public class AppsOnAirServices {
     }
 
     public static void copyFile(File source, File destination) throws IOException {
-        try (InputStream in = new FileInputStream(source);
-             OutputStream out = new FileOutputStream(destination)) {
+        try (InputStream in = new FileInputStream(source); OutputStream out = new FileOutputStream(destination)) {
             byte[] buffer = new byte[1024];
             int length;
             while ((length = in.read(buffer)) > 0) {
@@ -157,9 +151,9 @@ public class AppsOnAirServices {
         return dateFormat.format(calendar.getTime());
     }
 
-    public static String saveBitmapToFile(Bitmap bitmap) {
+    public static String saveBitmapToFile(Bitmap bitmap,Context context) {
         try {
-            File cacheDir = mContext.getCacheDir();
+            File cacheDir = context.getCacheDir();
             String fileName = "NativeScreenshot_" + getCurrentDateTimeString() + ".jpg";
             File screenshotFile = new File(cacheDir, fileName);
 
@@ -179,10 +173,6 @@ public class AppsOnAirServices {
         ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback() {
             @Override
             public void onAvailable(@NonNull Network network) {
-//                Intent intent = new Intent(context, FeedbackActivity.class);
-//                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                context.startActivity(intent);
-
 //                String url = BuildConfig.Base_URL + AppsOnAirServices.appId;
 //                OkHttpClient client = new OkHttpClient().newBuilder()
 //                        .build();

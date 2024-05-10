@@ -7,15 +7,13 @@
     android:background="#B3000000">
 
     <TextView
-        android:id="@+id/add_text_done_tv"
+        android:id="@+id/tv_done"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:background="@drawable/rounded_border_text_view"
-        android:padding="10dp"
-        android:text="Done"
+        android:background="@drawable/rounded_text_view"
+        android:paddingVertical="5dp"
+        android:paddingHorizontal="15dp"
+        android:text="@string/done"
         android:textAllCaps="false"
         android:textColor="@color/white"
         android:textSize="15sp"
@@ -27,17 +25,17 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@null"
-        android:colorControlActivated="#FFFFFF"
-        android:colorControlNormal="#FFFFFF"
+        android:colorControlActivated="@color/white"
+        android:colorControlNormal="@color/white"
         android:gravity="center"
         android:inputType="textMultiLine"
         android:singleLine="true"
-        android:textColorPrimary="#FFFFFF"
+        android:textColorPrimary="@color/white"
         android:textSize="40sp"
         app:layout_constraintBottom_toTopOf="@+id/add_text_color_picker_recycler_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/add_text_done_tv"
+        app:layout_constraintTop_toBottomOf="@+id/tv_done"
         tools:visibility="visible" />
 
     <androidx.recyclerview.widget.RecyclerView

@@ -1,4 +1,4 @@
-package com.appsonair;
+package com.appsonair
 
 
 import android.annotation.SuppressLint
@@ -18,8 +18,7 @@ import java.lang.NumberFormatException
 import java.util.ArrayList
 import android.os.Bundle
 
-
-class EmojiBSFragment : BottomSheetDialogFragment() {
+class BottomSheetEmoji : BottomSheetDialogFragment() {
     private var mEmojiListener: EmojiListener? = null
 
     interface EmojiListener {
@@ -46,7 +45,7 @@ class EmojiBSFragment : BottomSheetDialogFragment() {
     @SuppressLint("RestrictedApi")
     override fun setupDialog(dialog: Dialog, style: Int) {
         super.setupDialog(dialog, style)
-        val contentView = View.inflate(context, R.layout.fragment_bottom_sticker_emoji_dialog, null)
+        val contentView = View.inflate(context, R.layout.bottom_sheet_emoji, null)
         dialog.setContentView(contentView)
         val params = (contentView.parent as View).layoutParams as CoordinatorLayout.LayoutParams
         val behavior = params.behavior
@@ -99,25 +98,8 @@ class EmojiBSFragment : BottomSheetDialogFragment() {
     companion object {
         private lateinit var emojisList: ArrayList<String>
 
-        /**
-         * Initialize the list of emoji in form of unicode string
-         *
-         * @param context context
-         */
         fun initializeEmojis(context: Context) {
             emojisList = getEmojis(context)
-        }
-
-        /**
-         * Provide the list of emoji in form of unicode string
-         *
-         * @return list of emoji unicode
-         */
-        fun getEmojis(): ArrayList<String> {
-            if (!::emojisList.isInitialized) {
-                throw UninitializedPropertyAccessException("Emojis list is not initialized. Call initializeEmojis() first.")
-            }
-            return emojisList
         }
 
         private fun getEmojis(context: Context): ArrayList<String> {

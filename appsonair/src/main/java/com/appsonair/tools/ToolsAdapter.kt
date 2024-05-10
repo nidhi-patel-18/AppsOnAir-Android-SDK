@@ -4,18 +4,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.appsonair.R
 import java.util.ArrayList
 
-/**
- * @author [Burhanuddin Rashid](https://github.com/burhanrashid52)
- * @version 0.1.2
- * @since 5/23/2018
- */
-class EditingToolsAdapter(private val mOnItemSelected: OnItemSelected) :
-    RecyclerView.Adapter<EditingToolsAdapter.ViewHolder>() {
+class ToolsAdapter(private val mOnItemSelected: OnItemSelected) :
+    RecyclerView.Adapter<ToolsAdapter.ViewHolder>() {
     private val mToolList: MutableList<ToolModel> = ArrayList()
 
     interface OnItemSelected {
@@ -23,20 +17,18 @@ class EditingToolsAdapter(private val mOnItemSelected: OnItemSelected) :
     }
 
     internal inner class ToolModel(
-        val mToolName: String,
         val mToolIcon: Int,
         val mToolType: ToolType
     )
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.row_editing_tools, parent, false)
+            .inflate(R.layout.row_tools, parent, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = mToolList[position]
-        holder.txtTool.text = item.mToolName
         holder.imgToolIcon.setImageResource(item.mToolIcon)
     }
 
@@ -45,8 +37,7 @@ class EditingToolsAdapter(private val mOnItemSelected: OnItemSelected) :
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val imgToolIcon: ImageView = itemView.findViewById(R.id.imgToolIcon)
-        val txtTool: TextView = itemView.findViewById(R.id.txtTool)
+        val imgToolIcon: ImageView = itemView.findViewById(R.id.img_tool)
 
         init {
             itemView.setOnClickListener { _: View? ->
@@ -58,11 +49,12 @@ class EditingToolsAdapter(private val mOnItemSelected: OnItemSelected) :
     }
 
     init {
-        mToolList.add(ToolModel("Shape", R.drawable.ic_oval, ToolType.SHAPE))
-        mToolList.add(ToolModel("Text", R.drawable.ic_text, ToolType.TEXT))
-        mToolList.add(ToolModel("Eraser", R.drawable.ic_eraser, ToolType.ERASER))
-        mToolList.add(ToolModel("Filter", R.drawable.ic_photo_filter, ToolType.FILTER))
-        mToolList.add(ToolModel("Emoji", R.drawable.ic_insert_emoticon, ToolType.EMOJI))
-        mToolList.add(ToolModel("Sticker", R.drawable.ic_sticker, ToolType.STICKER))
+        mToolList.add(ToolModel(R.drawable.ic_oval, ToolType.SHAPE))
+        mToolList.add(ToolModel(R.drawable.ic_text, ToolType.TEXT))
+        mToolList.add(ToolModel(R.drawable.ic_eraser, ToolType.ERASER))
+        mToolList.add(ToolModel(R.drawable.ic_undo, ToolType.UNDO))
+        mToolList.add(ToolModel(R.drawable.ic_redo, ToolType.REDO))
+//        mToolList.add(ToolModel(R.drawable.ic_emoji, ToolType.EMOJI))
+//        mToolList.add(ToolModel(R.drawable.ic_gallery, ToolType.GALLERY))
     }
 }

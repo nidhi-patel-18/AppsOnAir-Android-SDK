@@ -3,20 +3,13 @@ package com.appsonair.base;
 import android.R
 import android.app.ProgressDialog
 import android.content.pm.PackageManager
-import android.util.Log
 import android.view.View
-import android.view.Window
-import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.appsonair.ScreenshotDetectionDelegate
 import com.google.android.material.snackbar.Snackbar
 
-/**
- * Created by Burhanuddin Rashid on 1/17/2018.
- */
 open class BaseActivity : AppCompatActivity() {
     private var mProgressDialog: ProgressDialog? = null
     private var mPermission: String? = null
@@ -35,20 +28,6 @@ open class BaseActivity : AppCompatActivity() {
     }
 
     open fun isPermissionGranted(isGranted: Boolean, permission: String?) {}
-
-    fun makeFullScreen() {
-        Log.d(
-            "Detector",
-            "makeFullScreen called..."
-        )
-
-
-        requestWindowFeature(Window.FEATURE_NO_TITLE)
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_FULLSCREEN,
-            WindowManager.LayoutParams.FLAG_FULLSCREEN
-        )
-    }
 
     protected fun showLoading(message: String) {
         mProgressDialog = ProgressDialog(this)

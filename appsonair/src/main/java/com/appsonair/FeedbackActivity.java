@@ -18,9 +18,6 @@ import com.google.android.material.textfield.TextInputEditText;
 
 
 public class FeedbackActivity extends AppCompatActivity {
-
-    private static final String TAG = "FeedbackActivity";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

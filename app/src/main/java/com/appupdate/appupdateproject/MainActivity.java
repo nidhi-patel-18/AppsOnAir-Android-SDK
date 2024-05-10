@@ -5,13 +5,12 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import com.appsonair.AppsOnAirServices;
+import com.appsonair.ScreenshotDetector;
 import com.appsonair.UpdateCallBack;
-import com.appsonair.ScreenshotDetectionDelegate;
-
 
 public class MainActivity extends Activity {
 
-    private ScreenshotDetectionDelegate screenshotDetectionDelegate;
+    private ScreenshotDetector screenshotDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,13 +32,13 @@ public class MainActivity extends Activity {
                 Log.e("mye", "onFailure" + message);
             }
         });
-        screenshotDetectionDelegate = new ScreenshotDetectionDelegate(this);
-        screenshotDetectionDelegate.startScreenshotDetection();
+        screenshotDetector = new ScreenshotDetector(this);
+        screenshotDetector.startScreenshotDetection();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        screenshotDetectionDelegate.stopScreenshotDetection();
+        screenshotDetector.stopScreenshotDetection();
     }
 }

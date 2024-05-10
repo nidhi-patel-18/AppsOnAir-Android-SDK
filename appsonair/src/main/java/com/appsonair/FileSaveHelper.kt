@@ -1,4 +1,4 @@
-package com.appsonair;
+package com.appsonair
 
 import android.annotation.SuppressLint
 import android.content.ContentResolver
@@ -7,12 +7,11 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.MutableLiveData
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.OnLifecycleEvent
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import kotlin.Throws
 import java.io.IOException
@@ -20,18 +19,6 @@ import java.lang.Exception
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-/**
- * General contract of this class is to
- * create a file on a device.
- *
- * How to Use it-
- * Call [FileSaveHelper.createFile]
- * if file is created you would receive it's file path and Uri
- * and after you are done with File call [FileSaveHelper.notifyThatFileIsNowPubliclyAvailable]
- *
- * Remember! in order to shutdown executor call [FileSaveHelper.addObserver] or
- * create object with the [FileSaveHelper]
- */
 class FileSaveHelper(private val mContentResolver: ContentResolver) : LifecycleObserver {
     private val executor: ExecutorService? = Executors.newSingleThreadExecutor()
     private val fileCreatedResult: MutableLiveData<FileMeta> = MutableLiveData()
@@ -56,19 +43,6 @@ class FileSaveHelper(private val mContentResolver: ContentResolver) : LifecycleO
         lifecycleOwner.lifecycle.addObserver(this)
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    fun release() {
-        executor?.shutdownNow()
-    }
-
-    /**
-     * The effects of this method are
-     * 1- insert new Image File data in MediaStore.Images column
-     * 2- create File on Disk.
-     *
-     * @param fileNameToSave fileName
-     * @param listener       result listener
-     */
     fun createFile(fileNameToSave: String, listener: OnFileCreateResult?) {
         resultListener = listener
         executor!!.submit {
@@ -152,12 +126,6 @@ class FileSaveHelper(private val mContentResolver: ContentResolver) : LifecycleO
     )
 
     interface OnFileCreateResult {
-        /**
-         * @param created  whether file creation is success or failure
-         * @param filePath filepath on disk. null in case of failure
-         * @param error    in case file creation is failed . it would represent the cause
-         * @param Uri      Uri to the newly created file. null in case of failure
-         */
         fun onFileCreateResult(created: Boolean, filePath: String?, error: String?, uri: Uri?)
     }
 
@@ -172,6 +140,7 @@ class FileSaveHelper(private val mContentResolver: ContentResolver) : LifecycleO
     }
 
     companion object {
+        @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.Q)
         fun isSdkHigherThan28(): Boolean {
             return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
         }

@@ -1,4 +1,4 @@
-package com.appsonair;
+package com.appsonair
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,7 +12,7 @@ import com.appsonair.ColorPickerAdapter.OnColorPickerClickListener
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import ja.burhanrashid52.photoeditor.shape.ShapeType
 
-class ShapeBSFragment : BottomSheetDialogFragment(), SeekBar.OnSeekBarChangeListener {
+class BottomSheetShape : BottomSheetDialogFragment(), SeekBar.OnSeekBarChangeListener {
     private var mProperties: Properties? = null
 
     interface Properties {
@@ -27,7 +27,7 @@ class ShapeBSFragment : BottomSheetDialogFragment(), SeekBar.OnSeekBarChangeList
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_bottom_shapes_dialog, container, false)
+        return inflater.inflate(R.layout.bottom_sheet_shape, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

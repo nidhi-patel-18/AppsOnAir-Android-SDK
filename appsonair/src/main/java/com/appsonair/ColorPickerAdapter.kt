@@ -1,4 +1,4 @@
-package com.appsonair;
+package com.appsonair
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -8,9 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.core.content.ContextCompat
 import java.util.ArrayList
 
-/**
- * Created by Ahmed Adel on 5/8/17.
- */
 class ColorPickerAdapter internal constructor(
     private var context: Context,
     colorPickerColors: List<Int>

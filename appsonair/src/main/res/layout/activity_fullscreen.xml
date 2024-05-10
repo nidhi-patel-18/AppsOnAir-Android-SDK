@@ -21,9 +21,9 @@
 
         <ImageView
             android:id="@+id/ic_back"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:src="@drawable/ic_back" />
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_close" />
 
         <View
             android:layout_width="0dp"
@@ -32,8 +32,8 @@
 
         <ImageView
             android:id="@+id/ic_edit"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:src="@drawable/ic_edit" />
     </LinearLayout>
 </FrameLayout>
