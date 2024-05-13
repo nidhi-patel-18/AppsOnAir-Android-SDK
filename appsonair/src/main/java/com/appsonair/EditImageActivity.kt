@@ -91,12 +91,10 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
         mRvTools.layoutManager = llmTools
         mRvTools.adapter = mEditingToolsAdapter
 
-        // NOTE(lucianocheng): Used to set integration testing parameters to PhotoEditor
-        val pinchTextScalable = intent.getBooleanExtra(PINCH_TEXT_SCALABLE_INTENT_KEY, true)
-
         mPhotoEditor = PhotoEditor.Builder(this, mPhotoEditorView)
-            .setPinchTextScalable(pinchTextScalable) // set flag to make text scalable when pinch
-            .build() // build photo editor sdk
+            .setPinchTextScalable(true)
+            .setClipSourceImage(true)
+            .build()
 
         mPhotoEditor.setOnPhotoEditorListener(this)
 
@@ -346,6 +344,7 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
             }
 
             TEXT -> {
+                mTxtCurrentTool.setText(R.string.label_text)
                 val textEditorDialogFragment = TextEditorDialog.show(this)
                 textEditorDialogFragment.setOnTextEditorListener(object :
                     TextEditorDialog.TextEditorListener {
@@ -353,7 +352,6 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
                         val styleBuilder = TextStyleBuilder()
                         styleBuilder.withTextColor(colorCode)
                         mPhotoEditor.addText(inputText, styleBuilder)
-                        mTxtCurrentTool.setText(R.string.label_text)
                     }
                 })
             }
@@ -402,7 +400,6 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
         private const val TAG = "EditImageActivity"
         private const val PICK_REQUEST = 53
         const val ACTION_NEXTGEN_EDIT = "action_nextgen_edit"
-        const val PINCH_TEXT_SCALABLE_INTENT_KEY = "PINCH_TEXT_SCALABLE"
         private var isOpen = false
         fun isOpen(): Boolean {
             return isOpen

@@ -30,6 +30,7 @@ public class FullscreenActivity extends AppCompatActivity {
             icEdit.setOnClickListener(v -> {
                 Intent intent1 = new Intent(FullscreenActivity.this, EditImageActivity.class);
                 intent1.setAction(Intent.ACTION_EDIT);
+                intent1.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent1.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                 intent1.setDataAndType(imagePath, "image/*");
                 startActivity(intent1);
