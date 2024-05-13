@@ -78,9 +78,9 @@ public class ScreenshotDetector {
 
     private void showNativeModal() {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Screenshot Captured")
-                .setMessage("Permission denied for reading media images")
-                .setPositiveButton("OK", (dialog, id) -> dialog.dismiss());
+        builder.setTitle(R.string.screenshot_capture)
+                .setMessage(R.string.permission_denied_for_reading_media_images)
+                .setPositiveButton(R.string.ok, (dialog, id) -> dialog.dismiss());
 
         AlertDialog dialog = builder.create();
         dialog.show();

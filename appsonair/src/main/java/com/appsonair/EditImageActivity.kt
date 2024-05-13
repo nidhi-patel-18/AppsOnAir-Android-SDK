@@ -22,10 +22,16 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.appsonair.base.BaseActivity
-import com.appsonair.tools.ToolsAdapter.OnItemSelected
 import com.appsonair.tools.ToolType
-import com.appsonair.tools.ToolType.*
+import com.appsonair.tools.ToolType.EMOJI
+import com.appsonair.tools.ToolType.ERASER
+import com.appsonair.tools.ToolType.GALLERY
+import com.appsonair.tools.ToolType.REDO
+import com.appsonair.tools.ToolType.SHAPE
+import com.appsonair.tools.ToolType.TEXT
+import com.appsonair.tools.ToolType.UNDO
 import com.appsonair.tools.ToolsAdapter
+import com.appsonair.tools.ToolsAdapter.OnItemSelected
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import ja.burhanrashid52.photoeditor.OnPhotoEditorListener
 import ja.burhanrashid52.photoeditor.PhotoEditor
@@ -126,16 +132,19 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
     }
 
     private fun initViews() {
-        mPhotoEditorView = findViewById(R.id.photoEditorView)
-        mTxtCurrentTool = findViewById(R.id.txtCurrentTool)
-        mRvTools = findViewById(R.id.rvConstraintTools)
-        mRootView = findViewById(R.id.rootView)
+        mPhotoEditorView = findViewById(R.id.photo_editor_view)
+        mTxtCurrentTool = findViewById(R.id.tv_selected_tool)
+        mRvTools = findViewById(R.id.rv_tools)
+        mRootView = findViewById(R.id.root_view)
 
-        val imgSave: ImageView = findViewById(R.id.imgSave)
+        val imgSave: ImageView = findViewById(R.id.img_save)
         imgSave.setOnClickListener(this)
 
-        val imgClose: ImageView = findViewById(R.id.imgClose)
+        val imgClose: ImageView = findViewById(R.id.img_close)
         imgClose.setOnClickListener(this)
+
+        val tvDone: TextView = findViewById(R.id.tv_done)
+        tvDone.setOnClickListener(this)
     }
 
     override fun onEditTextChangeListener(rootView: View?, text: String?, colorCode: Int) {
@@ -184,19 +193,26 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
     @SuppressLint("MissingPermission")
     override fun onClick(view: View) {
         when (view.id) {
-            R.id.imgSave -> saveImage()
-            R.id.imgClose -> onBackPressed()
+            R.id.img_save -> saveImage(false)
+            R.id.img_close -> onBackPressed()
+            R.id.tv_done -> saveImage(true)
         }
     }
 
+
     @RequiresPermission(allOf = [Manifest.permission.WRITE_EXTERNAL_STORAGE])
-    private fun saveImage() {
+    private fun saveImage(isFromFeedback: Boolean) {
         val fileName = System.currentTimeMillis().toString() + ".png"
         val hasStoragePermission = ContextCompat.checkSelfPermission(
             this, Manifest.permission.WRITE_EXTERNAL_STORAGE
         ) == PackageManager.PERMISSION_GRANTED
         if (hasStoragePermission || FileSaveHelper.isSdkHigherThan28()) {
-            showLoading("Saving...")
+            if (isFromFeedback) {
+                showLoading(getString(R.string.please_wait))
+            } else {
+                showLoading(getString(R.string.saving))
+            }
+
             mSaveFileHelper.createFile(fileName, object : FileSaveHelper.OnFileCreateResult {
 
                 @RequiresPermission(allOf = [Manifest.permission.WRITE_EXTERNAL_STORAGE])
@@ -213,12 +229,20 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
                             if (result is SaveFileResult.Success) {
                                 mSaveFileHelper.notifyThatFileIsNowPubliclyAvailable(contentResolver)
                                 hideLoading()
-                                showSnackbar("Image Saved Successfully")
+                                if (!isFromFeedback) {
+                                    showSnackbar(getString(R.string.image_saved_successfully))
+                                }
                                 mSaveImageUri = uri
                                 mPhotoEditorView.source.setImageURI(mSaveImageUri)
+                                if (isFromFeedback) {
+                                    sendFeedback(uri)
+                                } else {
+                                    openFullScreenView(uri)
+                                }
+
                             } else {
                                 hideLoading()
-                                showSnackbar("Failed to save Image")
+                                showSnackbar(getString(R.string.failed_to_save_image))
                             }
                         } else {
                             hideLoading()
@@ -230,6 +254,22 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
         } else {
             requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         }
+    }
+
+    private fun openFullScreenView(imageUri: Uri?) {
+        val intent = Intent(this, FullscreenActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        intent.putExtra("IMAGE_PATH", imageUri)
+        startActivity(intent)
+        finish()
+    }
+
+    private fun sendFeedback(imageUri: Uri?) {
+        val intent = Intent(this, FeedbackActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        intent.putExtra("IMAGE_PATH", imageUri)
+        startActivity(intent)
+        finish()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -277,7 +317,7 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
     @SuppressLint("MissingPermission")
     override fun isPermissionGranted(isGranted: Boolean, permission: String?) {
         if (isGranted) {
-            saveImage()
+            saveImage(false)
         }
     }
 
@@ -285,9 +325,13 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
     private fun showSaveDialog() {
         val builder = AlertDialog.Builder(this)
         builder.setMessage(getString(R.string.msg_save_image))
-        builder.setPositiveButton("Save") { _: DialogInterface?, _: Int -> saveImage() }
-        builder.setNegativeButton("Cancel") { dialog: DialogInterface, _: Int -> dialog.dismiss() }
-        builder.setNeutralButton("Discard") { _: DialogInterface?, _: Int -> finish() }
+        builder.setPositiveButton(getString(R.string.save)) { _: DialogInterface?, _: Int ->
+            saveImage(
+                false
+            )
+        }
+        builder.setNegativeButton(getString(R.string.cancel)) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
+        builder.setNeutralButton(getString(R.string.discard)) { _: DialogInterface?, _: Int -> finish() }
         builder.create().show()
     }
 
@@ -329,7 +373,12 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
                 val intent = Intent()
                 intent.type = "image/*"
                 intent.action = Intent.ACTION_GET_CONTENT
-                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_REQUEST)
+                startActivityForResult(
+                    Intent.createChooser(
+                        intent,
+                        getString(R.string.select_picture)
+                    ), PICK_REQUEST
+                )
             }
         }
     }

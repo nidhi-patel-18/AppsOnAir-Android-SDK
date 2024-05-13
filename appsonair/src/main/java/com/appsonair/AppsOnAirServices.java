@@ -2,7 +2,6 @@ package com.appsonair;
 
 import static android.content.Context.SENSOR_SERVICE;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -63,7 +62,6 @@ public class AppsOnAirServices {
                 float delta = mAccelCurrent - mAccelLast;
                 mAccel = mAccel * 0.9f + delta;
                 if (mAccel > 12) {
-                    Log.d(TAG, "onSensorChanged: ");
                     captureScreen(context);
                 }
             }

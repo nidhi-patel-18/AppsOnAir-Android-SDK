@@ -32,24 +32,24 @@ class BottomSheetShape : BottomSheetDialogFragment(), SeekBar.OnSeekBarChangeLis
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val rvColor: RecyclerView = view.findViewById(R.id.shapeColors)
-        val sbOpacity = view.findViewById<SeekBar>(R.id.shapeOpacity)
-        val sbBrushSize = view.findViewById<SeekBar>(R.id.shapeSize)
-        val shapeGroup = view.findViewById<RadioGroup>(R.id.shapeRadioGroup)
+        val rvColor: RecyclerView = view.findViewById(R.id.rv_shape_colors)
+        val sbOpacity = view.findViewById<SeekBar>(R.id.sb_opacity)
+        val sbBrushSize = view.findViewById<SeekBar>(R.id.sb_brush_size)
+        val shapeGroup = view.findViewById<RadioGroup>(R.id.radio_group_shape)
 
         // shape picker
         shapeGroup.setOnCheckedChangeListener { _: RadioGroup?, checkedId: Int ->
             when (checkedId) {
-                R.id.lineRadioButton -> {
+                R.id.rb_line -> {
                     mProperties!!.onShapePicked(ShapeType.Line)
                 }
-                R.id.arrowRadioButton -> {
+                R.id.rb_arrow -> {
                     mProperties!!.onShapePicked(ShapeType.Arrow())
                 }
-                R.id.ovalRadioButton -> {
+                R.id.rb_oval -> {
                     mProperties!!.onShapePicked(ShapeType.Oval)
                 }
-                R.id.rectRadioButton -> {
+                R.id.rb_rectangle -> {
                     mProperties!!.onShapePicked(ShapeType.Rectangle)
                 }
                 else -> {
@@ -84,10 +84,10 @@ class BottomSheetShape : BottomSheetDialogFragment(), SeekBar.OnSeekBarChangeLis
 
     override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
         when (seekBar.id) {
-            R.id.shapeOpacity -> if (mProperties != null) {
+            R.id.sb_opacity -> if (mProperties != null) {
                 mProperties!!.onOpacityChanged(i)
             }
-            R.id.shapeSize -> if (mProperties != null) {
+            R.id.sb_brush_size -> if (mProperties != null) {
                 mProperties!!.onShapeSizeChanged(i)
             }
         }

@@ -1,10 +1,12 @@
 <resources>
-    <string name="app_name">Xyz</string>
+    <string name="app_name">App name</string>
     <string name="update_title">app update available</string>
     <string name="update_force_dsc"> An update is available that must be installed.</string>
     <string name="update_dsc">An update is available. Would you like to install it?</string>
     <string name="btn_no_thanks">No, thanks</string>
     <string name="maintenance">app is under maintenance</string>
+    <string name="update">Update</string>
+    <string name="title">Title</string>
 
     <string name="new_ticket">New Ticket</string>
     <string name="description">Description</string>
@@ -32,6 +34,17 @@
     <string name="app_intent_name">PhotoEditor</string>
     <string name="done">Done</string>
     <string name="opacity">Opacity</string>
+    <string name="saving">Saving…</string>
+    <string name="please_wait">Please wait…</string>
+    <string name="image_saved_successfully">Image saved successfully!</string>
+    <string name="failed_to_save_image">Failed to save Image</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="discard">Discard</string>
+    <string name="select_picture">Select Picture</string>
+    <string name="screenshot_capture">Screenshot Capture</string>
+    <string name="permission_denied_for_reading_media_images">Permission denied for reading media images</string>
+    <string name="ok">OK</string>
 
     <string-array name="photo_editor_emoji">
 

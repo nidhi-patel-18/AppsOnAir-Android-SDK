@@ -6,42 +6,42 @@
     android:layout_height="wrap_content">
 
     <RadioGroup
-        android:id="@+id/shapeRadioGroup"
+        android:id="@+id/radio_group_shape"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/shapeType">
+        app:layout_constraintTop_toBottomOf="@id/tv_shape">
 
         <RadioButton
-            android:id="@+id/brushRadioButton"
+            android:id="@+id/rb_brush"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="true"
             android:text="@string/label_brush" />
 
         <RadioButton
-            android:id="@+id/lineRadioButton"
+            android:id="@+id/rb_line"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/label_line" />
 
         <RadioButton
-            android:id="@+id/arrowRadioButton"
+            android:id="@+id/rb_arrow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/label_arrow" />
 
         <RadioButton
-            android:id="@+id/ovalRadioButton"
+            android:id="@+id/rb_oval"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/label_oval" />
 
         <RadioButton
-            android:id="@+id/rectRadioButton"
+            android:id="@+id/rb_rectangle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/label_rectangle" />
@@ -49,7 +49,7 @@
     </RadioGroup>
 
     <SeekBar
-        android:id="@+id/shapeSize"
+        android:id="@+id/sb_brush_size"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -58,10 +58,10 @@
         android:progress="25"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/txtShapeSize" />
+        app:layout_constraintTop_toBottomOf="@id/tv_brush" />
 
     <SeekBar
-        android:id="@+id/shapeOpacity"
+        android:id="@+id/sb_opacity"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -71,10 +71,10 @@
         android:progress="255"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/txtOpacity" />
+        app:layout_constraintTop_toBottomOf="@id/tv_opacity" />
 
     <TextView
-        android:id="@+id/txtShapeSize"
+        android:id="@+id/tv_brush"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -84,10 +84,10 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/shapeRadioGroup" />
+        app:layout_constraintTop_toBottomOf="@id/radio_group_shape" />
 
     <TextView
-        android:id="@+id/txtOpacity"
+        android:id="@+id/tv_opacity"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -97,10 +97,10 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/txtShapeSize" />
+        app:layout_constraintTop_toBottomOf="@id/tv_brush" />
 
     <TextView
-        android:id="@+id/shapeType"
+        android:id="@+id/tv_shape"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -113,7 +113,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/shapeColors"
+        android:id="@+id/rv_shape_colors"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
@@ -127,7 +127,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/shapeOpacity"
+        app:layout_constraintTop_toBottomOf="@id/sb_opacity"
         tools:background="@android:color/black"
         tools:listitem="@layout/color_picker_item_list" />
 

@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
@@ -35,6 +33,7 @@ public class FullscreenActivity extends AppCompatActivity {
                 intent1.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                 intent1.setDataAndType(imagePath, "image/*");
                 startActivity(intent1);
+                finish();
             });
         } else {
             Log.d(TAG, "Handle the case where no image path is provided");

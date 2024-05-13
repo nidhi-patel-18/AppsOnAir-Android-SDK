@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#B3000000">
+    android:background="@color/add_text_bg">
 
     <TextView
         android:id="@+id/tv_done"
@@ -21,7 +21,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/add_text_edit_text"
+        android:id="@+id/et_add_text"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@null"
@@ -32,14 +32,14 @@
         android:singleLine="true"
         android:textColorPrimary="@color/white"
         android:textSize="40sp"
-        app:layout_constraintBottom_toTopOf="@+id/add_text_color_picker_recycler_view"
+        app:layout_constraintBottom_toTopOf="@+id/rv_add_text_color_picker"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_done"
         tools:visibility="visible" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/add_text_color_picker_recycler_view"
+        android:id="@+id/rv_add_text_color_picker"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"

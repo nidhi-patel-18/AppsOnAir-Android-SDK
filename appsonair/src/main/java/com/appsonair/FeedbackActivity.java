@@ -1,7 +1,11 @@
 package com.appsonair;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -18,6 +22,10 @@ import com.google.android.material.textfield.TextInputEditText;
 
 
 public class FeedbackActivity extends AppCompatActivity {
+
+    private static final String TAG = "FeedbackActivity";
+    private Uri imagePath;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,14 +41,28 @@ public class FeedbackActivity extends AppCompatActivity {
         EditText etEmail = findViewById(R.id.et_email);
         TextInputEditText etDescription = findViewById(R.id.et_description);
 
+        // Retrieve image path from Intent extras
+        Intent intent = getIntent();
+        if (intent != null && intent.hasExtra("IMAGE_PATH")) {
+            imagePath = intent.getParcelableExtra("IMAGE_PATH");
+            imgBug.setImageURI(imagePath);
+        } else {
+            Log.d(TAG, "Handle the case where no image path is provided");
+        }
+
         icClose.setOnClickListener(view -> onBackPressed());
 
-        icRemove.setOnClickListener(view -> flBugView.setVisibility(View.GONE));
+        icRemove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                imagePath = null;
+                flBugView.setVisibility(View.GONE);
+            }
+        });
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 String selectedItem = spinner.getSelectedItem().toString();
-                // imgDropDown.setImageResource(R.drawable.ic_down_arrow);
             }
 
             @Override

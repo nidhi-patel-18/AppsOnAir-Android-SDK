@@ -55,14 +55,14 @@ class TextEditorDialog : DialogFragment() {
 
         val activity = requireActivity()
 
-        mAddTextEditText = view.findViewById(R.id.add_text_edit_text)
+        mAddTextEditText = view.findViewById(R.id.et_add_text)
         mInputMethodManager =
             activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         tvDone = view.findViewById(R.id.tv_done)
 
         //Setup the color picker for text color
         val addTextColorPickerRecyclerView: RecyclerView =
-            view.findViewById(R.id.add_text_color_picker_recycler_view)
+            view.findViewById(R.id.rv_add_text_color_picker)
         val layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
         addTextColorPickerRecyclerView.layoutManager = layoutManager
         addTextColorPickerRecyclerView.setHasFixedSize(true)

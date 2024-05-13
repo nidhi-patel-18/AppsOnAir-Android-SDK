@@ -53,7 +53,7 @@ class BottomSheetEmoji : BottomSheetDialogFragment() {
             behavior.setBottomSheetCallback(mBottomSheetBehaviorCallback)
         }
         (contentView.parent as View).setBackgroundColor(resources.getColor(android.R.color.transparent))
-        val rvEmoji: RecyclerView = contentView.findViewById(R.id.rvEmoji)
+        val rvEmoji: RecyclerView = contentView.findViewById(R.id.rv_emoji)
         val gridLayoutManager = GridLayoutManager(activity, 5)
         rvEmoji.layoutManager = gridLayoutManager
         val emojiAdapter = EmojiAdapter()
@@ -82,7 +82,7 @@ class BottomSheetEmoji : BottomSheetDialogFragment() {
         }
 
         inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            val txtEmoji: TextView = itemView.findViewById(R.id.txtEmoji)
+            val txtEmoji: TextView = itemView.findViewById(R.id.tv_emoji)
 
             init {
                 itemView.setOnClickListener {

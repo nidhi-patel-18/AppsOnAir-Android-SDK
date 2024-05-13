@@ -54,6 +54,7 @@ class ToolsAdapter(private val mOnItemSelected: OnItemSelected) :
         mToolList.add(ToolModel(R.drawable.ic_eraser, ToolType.ERASER))
         mToolList.add(ToolModel(R.drawable.ic_undo, ToolType.UNDO))
         mToolList.add(ToolModel(R.drawable.ic_redo, ToolType.REDO))
+//        uncomment below code to add emoji on photo & pick image from gallery
 //        mToolList.add(ToolModel(R.drawable.ic_emoji, ToolType.EMOJI))
 //        mToolList.add(ToolModel(R.drawable.ic_gallery, ToolType.GALLERY))
     }
