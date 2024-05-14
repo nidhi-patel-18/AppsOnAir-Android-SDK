@@ -20,6 +20,7 @@ import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.HttpUrl;
 
 public class AppsOnAirServices {
 
@@ -74,7 +75,19 @@ public class AppsOnAirServices {
     }
 
     public static void callCDNServiceApi(Context context, UpdateCallBack callBack) {
-        String url = BuildConfig.CDN_BASE_URL + AppsOnAirServices.appId + ".json";
+        String baseUrl = BuildConfig.CDN_BASE_URL;
+
+        String pathSegment = AppsOnAirServices.appId + ".json";
+
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(baseUrl).newBuilder();
+        long unixTime = System.currentTimeMillis() / 1000L;
+        // Add the path segment
+        urlBuilder.addPathSegment(pathSegment);
+        // Add query parameters
+        urlBuilder.addQueryParameter("now", String.valueOf(unixTime));
+        // Build the URL with query parameters
+        String url = urlBuilder.build().toString();
+
         OkHttpClient client = new OkHttpClient().newBuilder().build();
         Request request = new Request.Builder().url(url).method("GET", null).build();
         client.newCall(request).enqueue(new okhttp3.Callback() {
