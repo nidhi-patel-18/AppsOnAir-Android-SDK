@@ -39,8 +39,8 @@ public class ScreenshotDetector {
     private final Context context;
     private ContentObserver contentObserver;
     private String previousPath = "";
-    private static final String TAG = "DetectorModule";
 
+    private static final String TAG = "ScreenshotDetector";
 
     public ScreenshotDetector(Context context) {
         this.context = context;
@@ -183,6 +183,7 @@ public class ScreenshotDetector {
         Uri imageUri = Uri.fromFile(newImageFile);
 
         Intent intent = new Intent(context, FullscreenActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         intent.putExtra("IMAGE_PATH", imageUri);
         context.startActivity(intent);
     }

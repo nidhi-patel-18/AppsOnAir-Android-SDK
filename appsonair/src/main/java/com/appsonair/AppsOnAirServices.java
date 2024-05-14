@@ -103,34 +103,6 @@ public class AppsOnAirServices {
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         intent.putExtra("IMAGE_PATH", imageUri);
         context.startActivity(intent);
-//        View view = ((Activity) mContext).getWindow().getDecorView();
-//        view.measure(View.MeasureSpec.makeMeasureSpec(view.getWidth(), View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(view.getHeight(), View.MeasureSpec.EXACTLY));
-//        view.layout((int) view.getX(), (int) view.getY(), (int) view.getX() + view.getMeasuredWidth(), (int) view.getY() + view.getMeasuredHeight());
-//        view.setDrawingCacheEnabled(true);
-//        view.buildDrawingCache(true);
-//        Bitmap bitmap = Bitmap.createBitmap(view.getDrawingCache());
-//        view.setDrawingCacheEnabled(false);
-//
-//        String path = Environment.getExternalStorageDirectory().toString() + "/test.png";
-//        File imageFile = new File(path);
-//        if (!imageFile.getParentFile().exists()) {
-//            imageFile.getParentFile().mkdirs();
-//        }
-//        Log.d(TAG, "captureScreen: " + imageFile.getPath());
-//        try {
-//            OutputStream outputStream = new FileOutputStream(imageFile);
-//            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-//            outputStream.flush();
-//            outputStream.close();
-//
-//            Intent intent = new Intent(mContext, FeedbackActivity.class);
-//            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//            mContext.startActivity(intent);
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
     }
 
     public static void copyFile(File source, File destination) throws IOException {
