@@ -91,7 +91,7 @@ public class ScreenshotDetector {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             String[] permissions = new String[0];
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-                permissions = new String[]{Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.MANAGE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                permissions = new String[]{Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
             }
             ActivityCompat.requestPermissions((Activity) context, permissions, REQUEST_MEDIA_PERMISSION);
         }
@@ -182,8 +182,11 @@ public class ScreenshotDetector {
         // Convert the File to a content URI
         Uri imageUri = Uri.fromFile(newImageFile);
 
-        Intent intent = new Intent(context, FullscreenActivity.class);
+        Intent intent = new Intent(context, EditImageActivity.class);
+        intent.setAction(Intent.ACTION_EDIT);
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         intent.putExtra("IMAGE_PATH", imageUri);
         context.startActivity(intent);
     }

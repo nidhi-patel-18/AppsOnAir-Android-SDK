@@ -30,7 +30,7 @@
     <string name="label_emoji">Emoji</string>
     <string name="label_eraser_mode">Eraser Mode</string>
     <string name="label_text">Text</string>
-    <string name="msg_save_image">Are you want to exit without saving image ?</string>
+    <string name="msg_save_image">Are you sure you want to leave this page?</string>
     <string name="app_intent_name">PhotoEditor</string>
     <string name="done">Done</string>
     <string name="opacity">Opacity</string>

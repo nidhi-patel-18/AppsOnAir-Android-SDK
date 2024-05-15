@@ -5,6 +5,7 @@ import static android.content.Context.SENSOR_SERVICE;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.graphics.Bitmap;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -21,6 +22,8 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -31,6 +34,11 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Objects;
+
+import okhttp3.Call;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 
 public class AppsOnAirServices {
@@ -65,6 +73,7 @@ public class AppsOnAirServices {
                     captureScreen(context);
                 }
             }
+
             @Override
             public void onAccuracyChanged(Sensor sensor, int i) {
 
@@ -80,7 +89,7 @@ public class AppsOnAirServices {
         rootView.setDrawingCacheEnabled(true);
         Bitmap screenshotBitmap = Bitmap.createBitmap(rootView.getDrawingCache());
         rootView.setDrawingCacheEnabled(false);
-        String screenshotPath = saveBitmapToFile(screenshotBitmap,context);
+        String screenshotPath = saveBitmapToFile(screenshotBitmap, context);
 
         File originalImageFile = new File(screenshotPath);
         if (!originalImageFile.exists()) {
@@ -99,8 +108,11 @@ public class AppsOnAirServices {
         // Convert the File to a content URI
         Uri imageUri = Uri.fromFile(newImageFile);
 
-        Intent intent = new Intent(context, FullscreenActivity.class);
+        Intent intent = new Intent(context, EditImageActivity.class);
+        intent.setAction(Intent.ACTION_EDIT);
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         intent.putExtra("IMAGE_PATH", imageUri);
         context.startActivity(intent);
     }
@@ -121,7 +133,7 @@ public class AppsOnAirServices {
         return dateFormat.format(calendar.getTime());
     }
 
-    public static String saveBitmapToFile(Bitmap bitmap,Context context) {
+    public static String saveBitmapToFile(Bitmap bitmap, Context context) {
         try {
             File cacheDir = context.getCacheDir();
             String fileName = "NativeScreenshot_" + getCurrentDateTimeString() + ".jpg";
@@ -143,64 +155,64 @@ public class AppsOnAirServices {
         ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback() {
             @Override
             public void onAvailable(@NonNull Network network) {
-//                String url = BuildConfig.Base_URL + AppsOnAirServices.appId;
-//                OkHttpClient client = new OkHttpClient().newBuilder()
-//                        .build();
-//                Request request = new Request.Builder()
-//                        .url(url)
-//                        .method("GET", null)
-//                        .build();
-//                client.newCall(request).enqueue(new okhttp3.Callback() {
-//                    @Override
-//                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
-//                        Log.d("EX:", String.valueOf(e));
-//                    }
-//
-//                    @Override
-//                    public void onResponse(@NonNull Call call, @NonNull Response response) {
-//                        try {
-//                            if (response.code() == 200) {
-//                                String myResponse = response.body().string();
-//                                JSONObject jsonObject = new JSONObject(myResponse);
-//                                JSONObject updateData = jsonObject.getJSONObject("updateData");
-//                                boolean isAndroidUpdate = updateData.getBoolean("isAndroidUpdate");
-//                                boolean isMaintenance = jsonObject.getBoolean("isMaintenance");
-//                                if (isAndroidUpdate) {
-//                                    boolean isAndroidForcedUpdate = updateData.getBoolean("isAndroidForcedUpdate");
-//                                    String androidBuildNumber = updateData.getString("androidBuildNumber");
-//                                    PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-//                                    int versionCode = info.versionCode;
-//                                    int buildNum = 0;
-//
-//                                    if (!(androidBuildNumber.equals(null))) {
-//                                        buildNum = Integer.parseInt(androidBuildNumber);
-//                                    }
-//                                    boolean isUpdate = versionCode < buildNum;
-//                                    if (showNativeUI && isUpdate && (isAndroidForcedUpdate || isAndroidUpdate)) {
-//                                        Intent intent = new Intent(context, AppUpdateActivity.class);
-//                                        intent.putExtra("res", myResponse);
-//                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                                        context.startActivity(intent);
-//                                    }
-//                                } else if (isMaintenance && showNativeUI) {
-//                                    Intent intent = new Intent(context, MaintenanceActivity.class);
-//                                    intent.putExtra("res", myResponse);
-//                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                                    context.startActivity(intent);
-//                                } else {
-//                                    //TODO : There is No Update and No Maintenance.
-//                                }
-//                                callback.onSuccess(myResponse);
-//                            }
-//
-//                        } catch (Exception e) {
-//                            e.printStackTrace();
-//                            callback.onFailure(e.getMessage());
-//                            Log.d("AAAA", String.valueOf(e.getMessage()));
-//
-//                        }
-//                    }
-//                });
+                String url = BuildConfig.Base_URL + AppsOnAirServices.appId;
+                OkHttpClient client = new OkHttpClient().newBuilder()
+                        .build();
+                Request request = new Request.Builder()
+                        .url(url)
+                        .method("GET", null)
+                        .build();
+                client.newCall(request).enqueue(new okhttp3.Callback() {
+                    @Override
+                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                        Log.d("EX:", String.valueOf(e));
+                    }
+
+                    @Override
+                    public void onResponse(@NonNull Call call, @NonNull Response response) {
+                        try {
+                            if (response.code() == 200) {
+                                String myResponse = response.body().string();
+                                JSONObject jsonObject = new JSONObject(myResponse);
+                                JSONObject updateData = jsonObject.getJSONObject("updateData");
+                                boolean isAndroidUpdate = updateData.getBoolean("isAndroidUpdate");
+                                boolean isMaintenance = jsonObject.getBoolean("isMaintenance");
+                                if (isAndroidUpdate) {
+                                    boolean isAndroidForcedUpdate = updateData.getBoolean("isAndroidForcedUpdate");
+                                    String androidBuildNumber = updateData.getString("androidBuildNumber");
+                                    PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+                                    int versionCode = info.versionCode;
+                                    int buildNum = 0;
+
+                                    if (!(androidBuildNumber.equals(null))) {
+                                        buildNum = Integer.parseInt(androidBuildNumber);
+                                    }
+                                    boolean isUpdate = versionCode < buildNum;
+                                    if (showNativeUI && isUpdate && (isAndroidForcedUpdate || isAndroidUpdate)) {
+                                        Intent intent = new Intent(context, AppUpdateActivity.class);
+                                        intent.putExtra("res", myResponse);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        context.startActivity(intent);
+                                    }
+                                } else if (isMaintenance && showNativeUI) {
+                                    Intent intent = new Intent(context, MaintenanceActivity.class);
+                                    intent.putExtra("res", myResponse);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    context.startActivity(intent);
+                                } else {
+                                    //TODO : There is No Update and No Maintenance.
+                                }
+                                callback.onSuccess(myResponse);
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            callback.onFailure(e.getMessage());
+                            Log.d("AAAA", String.valueOf(e.getMessage()));
+
+                        }
+                    }
+                });
             }
 
             @Override
