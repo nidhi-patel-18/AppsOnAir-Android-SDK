@@ -7,7 +7,6 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.MutableLiveData
 import androidx.appcompat.app.AppCompatActivity
@@ -140,9 +139,8 @@ class FileSaveHelper(private val mContentResolver: ContentResolver) : LifecycleO
     }
 
     companion object {
-        @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.Q)
         fun isSdkHigherThan28(): Boolean {
-            return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+            return Build.VERSION.SDK_INT > Build.VERSION_CODES.Q
         }
     }
 

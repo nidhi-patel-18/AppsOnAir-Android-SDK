@@ -5,12 +5,9 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import com.appsonair.AppsOnAirServices;
-import com.appsonair.ScreenshotDetector;
 import com.appsonair.UpdateCallBack;
 
 public class MainActivity extends Activity {
-
-    private ScreenshotDetector screenshotDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,7 +15,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         //Get your appId from https://appsonair.com/
-        AppsOnAirServices.setAppId("fbb66f89-82de-41aa-b6b4-3f18d805583c", true);
+        AppsOnAirServices.setAppId("---------fbb66f89-82de-41aa-b6b4-3f18d805583c", true);
 
         AppsOnAirServices.shakeBug(this);
         AppsOnAirServices.checkForAppUpdate(this, new UpdateCallBack() {
@@ -32,13 +29,5 @@ public class MainActivity extends Activity {
                 Log.e("mye", "onFailure" + message);
             }
         });
-        screenshotDetector = new ScreenshotDetector(this);
-        screenshotDetector.startScreenshotDetection();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        screenshotDetector.stopScreenshotDetection();
     }
 }

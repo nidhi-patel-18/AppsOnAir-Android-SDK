@@ -5,49 +5,61 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <RadioGroup
-        android:id="@+id/radio_group_shape"
+    <HorizontalScrollView
+        android:id="@+id/hsv_radio_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:paddingHorizontal="10dp"
-        android:layout_marginVertical="5dp"
+        android:scrollbars="none"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_shape">
 
-        <RadioButton
-            android:id="@+id/rb_brush"
+        <RadioGroup
+            android:id="@+id/radio_group_shape"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="@string/label_brush" />
+            android:layout_marginVertical="5dp"
+            android:orientation="horizontal">
 
-        <RadioButton
-            android:id="@+id/rb_line"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_line" />
+            <RadioButton
+                android:id="@+id/rb_brush"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/label_brush" />
 
-        <RadioButton
-            android:id="@+id/rb_arrow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_arrow" />
+            <RadioButton
+                android:id="@+id/rb_line"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_line" />
 
-        <RadioButton
-            android:id="@+id/rb_oval"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_oval" />
+            <RadioButton
+                android:id="@+id/rb_arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_arrow" />
 
-        <RadioButton
-            android:id="@+id/rb_rectangle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_rectangle" />
+            <RadioButton
+                android:id="@+id/rb_oval"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_oval" />
 
-    </RadioGroup>
+            <RadioButton
+                android:id="@+id/rb_rectangle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_rectangle" />
+
+            <RadioButton
+                android:id="@+id/rcb_rectangle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_rectangle" />
+        </RadioGroup>
+    </HorizontalScrollView>
 
     <SeekBar
         android:id="@+id/sb_brush_size"
@@ -74,20 +86,20 @@
         android:id="@+id/tv_brush"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="8dp"
         android:text="@string/label_brush"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/radio_group_shape" />
+        app:layout_constraintTop_toBottomOf="@id/hsv_radio_group" />
 
     <TextView
         android:id="@+id/tv_opacity"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
         android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="32dp"
         android:text="@string/opacity"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintEnd_toEndOf="parent"
@@ -98,8 +110,8 @@
         android:id="@+id/tv_shape"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
         android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="12dp"
         android:text="@string/label_shape"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -114,8 +126,8 @@
         android:layout_alignParentEnd="true"
         android:layout_marginTop="32dp"
         android:layout_marginBottom="12dp"
-        android:paddingHorizontal="12dp"
         android:orientation="horizontal"
+        android:paddingHorizontal="12dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

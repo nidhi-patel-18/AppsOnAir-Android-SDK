@@ -4,6 +4,7 @@ import static android.content.Context.SENSOR_SERVICE;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.graphics.Bitmap;
@@ -91,22 +92,11 @@ public class AppsOnAirServices {
         rootView.setDrawingCacheEnabled(false);
         String screenshotPath = saveBitmapToFile(screenshotBitmap, context);
 
-        File originalImageFile = new File(screenshotPath);
-        if (!originalImageFile.exists()) {
+        File imageFile = new File(screenshotPath);
+        if (!imageFile.exists()) {
             return;
         }
-        // Create a new File object in the cache directory
-        File cacheDir = context.getCacheDir();
-        String newFileName = "AppsOnAir_Services_Screenshot" + getCurrentDateTimeString() + ".jpg";
-        File newImageFile = new File(cacheDir, newFileName);
-        // Copy the original image to the cache directory
-        try {
-            copyFile(originalImageFile, newImageFile);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        // Convert the File to a content URI
-        Uri imageUri = Uri.fromFile(newImageFile);
+        Uri imageUri = Uri.fromFile(imageFile);
 
         Intent intent = new Intent(context, EditImageActivity.class);
         intent.setAction(Intent.ACTION_EDIT);
@@ -115,16 +105,6 @@ public class AppsOnAirServices {
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         intent.putExtra("IMAGE_PATH", imageUri);
         context.startActivity(intent);
-    }
-
-    public static void copyFile(File source, File destination) throws IOException {
-        try (InputStream in = new FileInputStream(source); OutputStream out = new FileOutputStream(destination)) {
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = in.read(buffer)) > 0) {
-                out.write(buffer, 0, length);
-            }
-        }
     }
 
     public static String getCurrentDateTimeString() {
@@ -136,7 +116,7 @@ public class AppsOnAirServices {
     public static String saveBitmapToFile(Bitmap bitmap, Context context) {
         try {
             File cacheDir = context.getCacheDir();
-            String fileName = "NativeScreenshot_" + getCurrentDateTimeString() + ".jpg";
+            String fileName = context.getString(R.string.app_name) + "_" + getCurrentDateTimeString() + ".jpg";
             File screenshotFile = new File(cacheDir, fileName);
 
             FileOutputStream outputStream = new FileOutputStream(screenshotFile);
@@ -146,7 +126,7 @@ public class AppsOnAirServices {
 
             return screenshotFile.getAbsolutePath();
         } catch (IOException e) {
-            Log.e(TAG, "Error saving native screenshot to file", e);
+            Log.e(TAG, "Error saving screenshot", e);
             return null;
         }
     }
