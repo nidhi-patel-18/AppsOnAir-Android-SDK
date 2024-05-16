@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
@@ -15,10 +14,14 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.skydoves.powerspinner.OnSpinnerItemSelectedListener;
+import com.skydoves.powerspinner.PowerSpinnerView;
 
 
 public class FeedbackActivity extends AppCompatActivity {
@@ -31,9 +34,8 @@ public class FeedbackActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feedback);
 
-        Spinner spinner = findViewById(R.id.sp_ticket_type);
+        PowerSpinnerView spinner = findViewById(R.id.sp_ticket_type);
         FrameLayout flBugView = findViewById(R.id.fl_bug_view);
-        ImageView icDropDown = findViewById(R.id.ic_drop_down);
         ImageView imgBug = findViewById(R.id.img_bug);
         ImageView icRemove = findViewById(R.id.ic_remove);
         ImageView icClose = findViewById(R.id.ic_close);
@@ -52,21 +54,15 @@ public class FeedbackActivity extends AppCompatActivity {
 
         icClose.setOnClickListener(view -> onBackPressed());
 
-        icRemove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                imagePath = null;
-                flBugView.setVisibility(View.GONE);
-            }
+        icRemove.setOnClickListener(view -> {
+            imagePath = null;
+            flBugView.setVisibility(View.GONE);
         });
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spinner.selectItemByIndex(0);
+        spinner.setOnSpinnerItemSelectedListener(new OnSpinnerItemSelectedListener<String>() {
             @Override
-            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                String selectedItem = spinner.getSelectedItem().toString();
-            }
+            public void onItemSelected(int oldIndex, @Nullable String oldItem, int newIndex, String newItem) {
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parentView) {
             }
         });
 

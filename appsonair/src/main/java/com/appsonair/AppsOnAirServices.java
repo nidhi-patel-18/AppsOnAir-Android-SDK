@@ -97,7 +97,7 @@ public class AppsOnAirServices {
         }
         Uri imageUri = Uri.fromFile(imageFile);
 
-        Intent intent = new Intent(context, EditImageActivity.class);
+        Intent intent = new Intent(context, FeedbackActivity.class);
         intent.setAction(Intent.ACTION_EDIT);
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);

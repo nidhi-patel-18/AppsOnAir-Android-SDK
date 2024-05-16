@@ -64,8 +64,6 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
     private lateinit var mShapeBuilder: ShapeBuilder
     private lateinit var mEmojiBSFragment: BottomSheetEmoji
     private lateinit var mRvTools: RecyclerView
-    private lateinit var width: Integer
-    private lateinit var height: Integer
     private val mEditingToolsAdapter = ToolsAdapter(this)
 
     @VisibleForTesting
