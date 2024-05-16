@@ -27,24 +27,20 @@
     <string name="label_rectangle">Rectangle</string>
     <string name="label_line">Line</string>
     <string name="label_arrow">Arrow</string>
-    <string name="label_emoji">Emoji</string>
-    <string name="label_eraser_mode">Eraser Mode</string>
-    <string name="label_text">Text</string>
     <string name="msg_save_image">Are you sure you want to leave this page?</string>
     <string name="app_intent_name">PhotoEditor</string>
     <string name="done">Done</string>
     <string name="opacity">Opacity</string>
-    <string name="saving">Saving…</string>
     <string name="please_wait">Please wait…</string>
-    <string name="image_saved_successfully">Image saved successfully!</string>
     <string name="failed_to_save_image">Failed to save Image</string>
+    <string name="image_saved_successfully">Image saved successfully!</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="discard">Discard</string>
+    <string name="open_setting">Open setting</string>
+    <string name="continue_str">Continue</string>
     <string name="select_picture">Select Picture</string>
-    <string name="screenshot_capture">Screenshot Capture</string>
-    <string name="permission_denied_for_reading_media_images">Permission denied for reading media images</string>
-    <string name="ok">OK</string>
+    <string name="save_image_alert_msg">To save this image, please allow required permission from setting.</string>
 
     <string-array name="photo_editor_emoji">
 

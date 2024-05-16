@@ -2,15 +2,16 @@ package com.appsonair
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.BitmapFactory
-import android.icu.number.IntegerWidth
-import android.icu.text.ListFormatter.Width
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.provider.Settings
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -20,6 +21,7 @@ import android.widget.TextView
 import androidx.annotation.RequiresPermission
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -47,7 +49,11 @@ import ja.burhanrashid52.photoeditor.shape.ShapeBuilder
 import ja.burhanrashid52.photoeditor.shape.ShapeType
 import kotlinx.coroutines.launch
 import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickListener,
     BottomSheetShape.Properties, BottomSheetEmoji.EmojiListener, OnItemSelected {
@@ -102,7 +108,7 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
 
         val layoutParams = mPhotoEditorView.layoutParams
         layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT
-        layoutParams.height =  ViewGroup.LayoutParams.WRAP_CONTENT
+        layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
         mPhotoEditorView.layoutParams = layoutParams
 
         mPhotoEditor.setOnPhotoEditorListener(this)
@@ -112,13 +118,9 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
     private fun handleIntentImage(source: ImageView) {
         if (intent == null) {
             return
-        } else {
-            if (intent != null && intent.hasExtra("IMAGE_PATH")) {
-                val imagePath = intent.getParcelableExtra<Uri>("IMAGE_PATH")
-                source.setImageURI(imagePath)
-            } else {
-                //
-            }
+        } else if (intent != null && intent.hasExtra("IMAGE_PATH")) {
+            val imagePath = intent.getParcelableExtra<Uri>("IMAGE_PATH")
+            source.setImageURI(imagePath)
         }
     }
 
@@ -208,22 +210,44 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
                             if (result is SaveFileResult.Success) {
                                 mSaveFileHelper.notifyThatFileIsNowPubliclyAvailable(contentResolver)
                                 hideLoading()
+                                showSnackbar(getString(R.string.image_saved_successfully))
                                 mSaveImageUri = uri
                                 mPhotoEditorView.source.setImageURI(mSaveImageUri)
                                 sendFeedback(uri)
                             } else {
                                 hideLoading()
                                 showSnackbar(getString(R.string.failed_to_save_image))
+                                sendFeedback(uri)
                             }
                         } else {
                             hideLoading()
-                            error?.let { showSnackbar(error) }
+                            showSnackbar(getString(R.string.failed_to_save_image))
+                            sendFeedback(uri)
                         }
                     }
                 }
             })
         } else {
             requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (grantResults.isNotEmpty()) {
+            if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                if (!ActivityCompat.shouldShowRequestPermissionRationale(
+                        this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    )
+                ) {
+                    showSystemDialog()
+                }
+            }
         }
     }
 
@@ -291,6 +315,71 @@ class EditImageActivity : BaseActivity(), OnPhotoEditorListener, View.OnClickLis
         builder.setNeutralButton(getString(R.string.discard)) { _: DialogInterface?, _: Int -> finish() }
         builder.create().show()
     }
+
+    private fun showSystemDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setMessage(getString(R.string.save_image_alert_msg))
+        builder.setPositiveButton(getString(R.string.continue_str)) { _: DialogInterface?, _: Int ->
+            captureScreen()
+        }
+        builder.setNegativeButton(getString(R.string.cancel)) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
+        builder.setNeutralButton(getString(R.string.open_setting)) { _: DialogInterface?, _: Int ->
+            goToSystemSetting()
+        }
+        builder.create().show()
+    }
+
+    private fun goToSystemSetting() {
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+        val uri = Uri.fromParts("package", packageName, null)
+        intent.data = uri
+        startActivity(intent)
+    }
+
+    private fun captureScreen() {
+        val bitmap = Bitmap.createBitmap(
+            mPhotoEditorView.width,
+            mPhotoEditorView.height,
+            Bitmap.Config.ARGB_8888
+        )
+        val canvas = Canvas(bitmap)
+        mPhotoEditorView.draw(canvas)
+
+        val screenshotPath = saveBitmapToFile(bitmap, this)
+
+        val imageFile = File(screenshotPath.toString())
+        if (!imageFile.exists()) {
+            return
+        }
+        val imageUri = Uri.fromFile(imageFile)
+        sendFeedback(imageUri)
+    }
+
+    private fun getCurrentDateTimeString(): String {
+        val calendar = Calendar.getInstance()
+        val dateFormat = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
+        return dateFormat.format(calendar.time)
+    }
+
+    private fun saveBitmapToFile(bitmap: Bitmap, context: Context): String? {
+        try {
+            val cacheDir = context.cacheDir
+            val fileName =
+                context.getString(R.string.app_name) + "_" + getCurrentDateTimeString() + ".jpg"
+            val screenshotFile = File(cacheDir, fileName)
+
+            val outputStream = FileOutputStream(screenshotFile)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+            outputStream.flush()
+            outputStream.close()
+
+            return screenshotFile.absolutePath
+        } catch (e: IOException) {
+            Log.e(TAG, "Error saving screenshot", e)
+            return null
+        }
+    }
+
 
     override fun onToolSelected(toolType: ToolType) {
         when (toolType) {
