@@ -25,11 +25,8 @@ import androidx.annotation.NonNull;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -40,17 +37,13 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-
 public class AppsOnAirServices {
 
     static String appId;
     static Boolean showNativeUI;
     private static final String TAG = "AppsOnAirServices";
-
     static SensorManager mSensorManager;
-    static float mAccel;
-    static float mAccelCurrent;
-    static float mAccelLast;
+    static float mAccel, mAccelCurrent, mAccelLast;
 
     public static void setAppId(String appId, boolean showNativeUI) {
         AppsOnAirServices.appId = appId;
@@ -97,7 +90,7 @@ public class AppsOnAirServices {
         }
         Uri imageUri = Uri.fromFile(imageFile);
 
-        Intent intent = new Intent(context, FeedbackActivity.class);
+        Intent intent = new Intent(context, EditImageActivity.class);
         intent.setAction(Intent.ACTION_EDIT);
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
