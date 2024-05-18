@@ -4,7 +4,9 @@ package com.appupdate.appupdateproject;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
+
 import com.appsonair.AppsOnAirServices;
+import com.appsonair.ShakeBugService;
 import com.appsonair.UpdateCallBack;
 
 public class MainActivity extends Activity {
@@ -17,7 +19,7 @@ public class MainActivity extends Activity {
         //Get your appId from https://appsonair.com/
         AppsOnAirServices.setAppId("---------fbb66f89-82de-41aa-b6b4-3f18d805583c", true);
 
-        AppsOnAirServices.shakeBug(this);
+        ShakeBugService.shakeBug(this);
         AppsOnAirServices.checkForAppUpdate(this, new UpdateCallBack() {
             @Override
             public void onSuccess(String response) {
