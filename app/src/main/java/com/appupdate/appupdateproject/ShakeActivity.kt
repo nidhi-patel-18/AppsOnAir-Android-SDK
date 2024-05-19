@@ -13,7 +13,7 @@ class ShakeActivity : AppCompatActivity() {
         setContentView(R.layout.activity_shake)
 
         //Get your appId from https://appsonair.com/
-        AppsOnAirServices.setAppId("---------fbb66f89-82de-41aa-b6b4-3f18d805583c", true)
+        AppsOnAirServices.setAppId("---------app-id-------------", true)
 
         ShakeBugService.shakeBug(this)
 

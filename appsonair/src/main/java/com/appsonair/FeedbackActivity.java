@@ -2,27 +2,28 @@ package com.appsonair;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.Spinner;
-import android.widget.Toast;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.skydoves.powerspinner.OnSpinnerItemSelectedListener;
 import com.skydoves.powerspinner.PowerSpinnerView;
-
 
 public class FeedbackActivity extends AppCompatActivity {
 
@@ -33,15 +34,53 @@ public class FeedbackActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feedback);
+        //init views
+        LinearLayout linearLayout = findViewById(R.id.ll_main);
+        LinearLayout llAppbar = findViewById(R.id.ll_appbar);
+
+        TextView tvAppbarTitle = findViewById(R.id.tv_appbar_title);
+        TextView tvTicketType = findViewById(R.id.tv_ticket_type);
+        TextView tvDescription = findViewById(R.id.tv_description);
+        TextView tvEmail = findViewById(R.id.tv_email);
 
         PowerSpinnerView spinner = findViewById(R.id.sp_ticket_type);
         FrameLayout flBugView = findViewById(R.id.fl_bug_view);
+        Button btnSubmit = findViewById(R.id.btn_submit);
+
         ImageView imgBug = findViewById(R.id.img_bug);
         ImageView icRemove = findViewById(R.id.ic_remove);
         ImageView icClose = findViewById(R.id.ic_close);
-        Button btnSubmit = findViewById(R.id.btn_submit);
+
         EditText etEmail = findViewById(R.id.et_email);
         TextInputEditText etDescription = findViewById(R.id.et_description);
+        TextInputLayout tilDescription = findViewById(R.id.til_description);
+
+        //set view properties
+        ShakeBugService.Companion companion = ShakeBugService.Companion;
+        linearLayout.setBackgroundColor(parseColorToInteger(companion.getPageBackgroundColor()));
+
+        llAppbar.setBackgroundColor(parseColorToInteger(companion.getAppBarBackgroundColor()));
+        tvAppbarTitle.setText(companion.getAppBarTitleText());
+        tvAppbarTitle.setTextColor(parseColor(companion.getAppBarTitleColor()));
+
+        tvTicketType.setText(companion.getTicketTypeLabelText());
+        tvTicketType.setTextColor(parseColor(companion.getTicketTypeLabelColor()));
+
+        tvDescription.setText(companion.getDescriptionLabelText());
+        tvDescription.setTextColor(parseColor(companion.getDescriptionLabelColor()));
+        tilDescription.setCounterMaxLength(companion.getDescriptionMaxLength());
+        tilDescription.setCounterTextColor(parseColor(companion.getDescriptionCounterTextColor()));
+        tilDescription.setPlaceholderText(companion.getDescriptionHintText());
+        tilDescription.setPlaceholderTextColor(parseColor(companion.getDescriptionHintColor()));
+
+        tvEmail.setText(companion.getEmailLabelText());
+        tvEmail.setTextColor(parseColor(companion.getEmailLabelColor()));
+        etEmail.setHint(companion.getEmailHintText());
+        etEmail.setHintTextColor(parseColor(companion.getEmailHintColor()));
+
+        btnSubmit.setText(companion.getButtonText());
+        btnSubmit.setTextColor(parseColor(companion.getButtonTextColor()));
+        btnSubmit.setBackgroundTintList(parseColor(companion.getButtonBackgroundColor()));
 
         // Retrieve image path from Intent extras
         Intent intent = getIntent();
@@ -96,6 +135,14 @@ public class FeedbackActivity extends AppCompatActivity {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
+    }
+
+    private ColorStateList parseColor(String color) {
+        return ColorStateList.valueOf(Color.parseColor(color));
+    }
+
+    private Integer parseColorToInteger(String color) {
+        return Color.parseColor(color);
     }
 
     @Override
