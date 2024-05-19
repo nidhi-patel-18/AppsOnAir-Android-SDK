@@ -59,9 +59,9 @@ public class FeedbackActivity extends AppCompatActivity {
         ShakeBugService.Companion companion = ShakeBugService.Companion;
         linearLayout.setBackgroundColor(parseColorToInteger(companion.getPageBackgroundColor()));
 
-        llAppbar.setBackgroundColor(parseColorToInteger(companion.getAppBarBackgroundColor()));
-        tvAppbarTitle.setText(companion.getAppBarTitleText());
-        tvAppbarTitle.setTextColor(parseColor(companion.getAppBarTitleColor()));
+        llAppbar.setBackgroundColor(parseColorToInteger(companion.getAppbarBackgroundColor()));
+        tvAppbarTitle.setText(companion.getAppbarTitleText());
+        tvAppbarTitle.setTextColor(parseColor(companion.getAppbarTitleColor()));
 
         tvTicketType.setText(companion.getTicketTypeLabelText());
         tvTicketType.setTextColor(parseColor(companion.getTicketTypeLabelColor()));

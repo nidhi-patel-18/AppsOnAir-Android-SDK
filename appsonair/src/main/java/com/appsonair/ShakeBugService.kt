@@ -26,9 +26,9 @@ class ShakeBugService {
         private const val BUTTON_BACKGROUND_COLOR: String = "#007AFF"
 
         var pageBackgroundColor: String = PAGE_BACKGROUND_COLOR
-        var appBarBackgroundColor: String = APP_BAR_BACKGROUND_COLOR
-        var appBarTitleText: String = APP_BAR_TITLE_TEXT
-        var appBarTitleColor: String = APP_BAR_TITLE_COLOR
+        var appbarBackgroundColor: String = APP_BAR_BACKGROUND_COLOR
+        var appbarTitleText: String = APP_BAR_TITLE_TEXT
+        var appbarTitleColor: String = APP_BAR_TITLE_COLOR
         var ticketTypeLabelText: String = TICKET_TYPE_LABEL_TEXT
         var ticketTypeLabelColor: String = TICKET_TYPE_LABEL_COLOR
         var descriptionLabelText: String = DESCRIPTION_LABEL_TEXT
@@ -58,9 +58,9 @@ class ShakeBugService {
         fun shakeBug(
             context: Context,
             pageBackgroundColor: String = PAGE_BACKGROUND_COLOR,
-            appBarBackgroundColor: String = APP_BAR_BACKGROUND_COLOR,
-            appBarTitleText: String = APP_BAR_TITLE_TEXT,
-            appBarTitleColor: String = APP_BAR_TITLE_COLOR,
+            appbarBackgroundColor: String = APP_BAR_BACKGROUND_COLOR,
+            appbarTitleText: String = APP_BAR_TITLE_TEXT,
+            appbarTitleColor: String = APP_BAR_TITLE_COLOR,
             ticketTypeLabelText: String = TICKET_TYPE_LABEL_TEXT,
             ticketTypeLabelColor: String = TICKET_TYPE_LABEL_COLOR,
             descriptionLabelText: String = DESCRIPTION_LABEL_TEXT,
@@ -79,11 +79,11 @@ class ShakeBugService {
         ) {
             ShakeBugService.pageBackgroundColor =
                 if (isValidColorHex(pageBackgroundColor)) pageBackgroundColor else PAGE_BACKGROUND_COLOR
-            ShakeBugService.appBarBackgroundColor =
-                if (isValidColorHex(appBarBackgroundColor)) appBarBackgroundColor else APP_BAR_BACKGROUND_COLOR
-            ShakeBugService.appBarTitleText = appBarTitleText
-            ShakeBugService.appBarTitleColor =
-                if (isValidColorHex(appBarTitleColor)) appBarTitleColor else APP_BAR_TITLE_COLOR
+            ShakeBugService.appbarBackgroundColor =
+                if (isValidColorHex(appbarBackgroundColor)) appbarBackgroundColor else APP_BAR_BACKGROUND_COLOR
+            ShakeBugService.appbarTitleText = appbarTitleText
+            ShakeBugService.appbarTitleColor =
+                if (isValidColorHex(appbarTitleColor)) appbarTitleColor else APP_BAR_TITLE_COLOR
             ShakeBugService.ticketTypeLabelText = ticketTypeLabelText
             ShakeBugService.ticketTypeLabelColor =
                 if (isValidColorHex(ticketTypeLabelColor)) ticketTypeLabelColor else TICKET_TYPE_LABEL_COLOR
@@ -110,6 +110,4 @@ class ShakeBugService {
             AppsOnAirServices.shakeBug(context)
         }
     }
-
-
 }
